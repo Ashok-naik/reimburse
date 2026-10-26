@@ -815,8 +815,11 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   .side .summary-card {
     margin-bottom: 0;
   }
-  .submit-action-wrap {
-    order: 8;
+  /* In mobile/tablet responsive view: remove reset to sample data button and submit for kind approval button */
+  #loadSampleBtn,
+  .submit-action-wrap,
+  #submitBtn {
+    display: none !important;
   }
   #recentClaimsCard {
     order: 9;
@@ -1008,14 +1011,11 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
     max-height: 180px;
   }
 
-  /* Submit Button on Mobile */
-  .submit-action-wrap {
-    margin: 16px 0 20px !important;
-  }
+  /* Remove Reset to Sample Data and Submit for Kind Approval in mobile view */
+  #loadSampleBtn,
+  .submit-action-wrap,
   #submitBtn {
-    padding: 13px 20px !important;
-    font-size: 15px !important;
-    width: 100% !important;
+    display: none !important;
   }
 
   /* Modal on Mobile */
