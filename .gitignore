@@ -12,3 +12,5 @@ desktop.ini
 # Temporary & Log files
 *.log
 *.tmp
+edge-profile*
+scratch/

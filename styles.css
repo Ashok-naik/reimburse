@@ -778,13 +778,48 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
 
 /* --- 3. Tablet Portrait & Mid-Screen Tabs (640px to 900px) --- */
 @media (max-width: 900px) {
+  main.container {
+    display: flex;
+    flex-direction: column;
+  }
+  .page-head {
+    order: 1;
+    margin: 20px 0 16px;
+  }
   .layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 15px;
+    display: contents;
+  }
+  #claimDetailsCard {
+    order: 2;
+    margin-bottom: 16px;
+  }
+  #travelBreakdownCard {
+    order: 3;
+    margin-bottom: 16px;
+  }
+  #narrativeCard {
+    order: 4;
+    margin-bottom: 16px;
+  }
+  #approvalWorkflowCard {
+    order: 5;
+  }
+  #uploadImagesCard {
+    order: 6;
+    margin-bottom: 16px;
+  }
+  .side {
+    order: 7;
+    margin-bottom: 16px;
   }
   .side .summary-card {
     margin-bottom: 0;
+  }
+  .submit-action-wrap {
+    order: 8;
+  }
+  #recentClaimsCard {
+    order: 9;
   }
   .summary-list {
     display: grid;
@@ -798,9 +833,6 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   }
   .image-upload-box:last-child {
     grid-column: span 2;
-  }
-  .page-head {
-    margin: 20px 0 16px;
   }
   .page-head h2 {
     font-size: 22px;
@@ -862,6 +894,12 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   .card {
     padding: 16px 14px;
     border-radius: 12px;
+    margin-bottom: 14px;
+  }
+  #claimDetailsCard {
+    margin-bottom: 14px;
+  }
+  .side {
     margin-bottom: 14px;
   }
   .card-title {
