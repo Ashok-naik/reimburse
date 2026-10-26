@@ -1,11 +1,19 @@
 /* TASK / SEAP — Reimbursement Portal logic */
 
+function getTodayIso() {
+  const d = new Date();
+  const yr = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${yr}-${mo}-${day}`;
+}
+
 const SAMPLE = {
   year: '2026',
   month: 'Sep',
   noteFileNo: 'TASK/SEAP/2026/Sep/6374',
   noteFileNum: '1',
-  dt: '2026-10-06',
+  dt: getTodayIso(),
   trainerName: 'Ashok Kumar Naik Guguloth',
   empId: '6374',
   designation: ' Technical Trainer',
@@ -13,7 +21,7 @@ const SAMPLE = {
   college: 'RC Khammam',
   course: 'FrontEnd',
   district: 'Khammam',
-  travelDate: '2026-10-12',
+  travelDate: getTodayIso(),
   amount: 1080,
   regRef: 'Training Calendar.',
 };
@@ -415,6 +423,10 @@ function syncPdfTravelTable() {
 /* ---------- Sample loader ---------- */
 
 function loadSample() {
+  const today = getTodayIso();
+  SAMPLE.dt = today;
+  SAMPLE.travelDate = today;
+
   // Set hidden fields
   const hiddenFields = ['noteFileNo', 'dt', 'trainerName', 'empId', 'designation', 'department', 'college', 'course', 'district', 'travelDate', 'amount', 'regRef'];
   hiddenFields.forEach(id => {
@@ -763,13 +775,31 @@ if (successModal) {
   });
 }
 
-// Ensure initial travel table date inputs reflect current date
-const todayIso = getTodayIso();
-document.querySelectorAll('#travelTableBody tr td:first-child input[type="date"]').forEach(inp => {
-  if (!inp.value || inp.value.startsWith('2026-09-')) {
+// Ensure ALL calendar date inputs reflect the current date across all responsive designs
+function initAllDateInputsToCurrent() {
+  const todayIso = getTodayIso();
+
+  // 1. All input[type="date"] in forms, tables, and rows
+  document.querySelectorAll('input[type="date"]').forEach(inp => {
     inp.value = todayIso;
-  }
-});
+  });
+
+  // 2. Specific claim date fields and hidden sync fields
+  const tableDt = document.getElementById('tableDt');
+  if (tableDt) tableDt.value = todayIso;
+  const hiddenDt = document.getElementById('dt');
+  if (hiddenDt) hiddenDt.value = todayIso;
+
+  const tableTravel = document.getElementById('tableTravel');
+  if (tableTravel) tableTravel.value = todayIso;
+  const hiddenTravel = document.getElementById('travelDate');
+  if (hiddenTravel) hiddenTravel.value = todayIso;
+
+  // 3. Header text date display
+  const dtDisplay = document.getElementById('dtDisplay');
+  if (dtDisplay) dtDisplay.textContent = fmtDate(todayIso);
+}
+initAllDateInputsToCurrent();
 
 // Attach listeners to all initial rows in travel table
 document.querySelectorAll('.travel-table tbody tr').forEach(tr => {
