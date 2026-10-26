@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TASK / SEAP — Reimbursement</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">T</div>
+      <div class="header-text">
+        <h1>Reimbursement With-in City</h1>
+        <p>TASK / SEAP &middot; Training &amp; Travel Expenditure Claims Portal</p>
+      </div>
+      <span class="header-tag">● Internal Use Only</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-head">
+      <div class="page-head-title-row">
+        <h2>Training Reimbursement Claim</h2>
+        <span class="pill pill-approved" style="font-size:12px;font-weight:700;">● Active Session</span>
+      </div>
+      <p class="page-head-desc">
+        Note file No: <strong id="noteFileNoDisplay">TASK/SEAP/2026/Sep/6374 / Note file No: 1</strong>
+        &nbsp;&middot;&nbsp; Date of Claim (Dt): <strong id="dtDisplay">09/09/2026</strong>
+      </p>
+    </div>
+
+    <div class="layout">
+      <!-- ============ CLAIM DETAILS FORM ============ -->
+      <section class="card" id="claimDetailsCard">
+        <div class="card-header-flex" style="margin-bottom:14px;">
+          <h3 class="card-title" style="margin:0;border:none;padding:0;">📋 1 &middot; Claim Details &mdash; As Per Note File</h3>
+          <span class="pill pill-draft" style="font-size:11px;">Official Records</span>
+        </div>
+        <div class="doc-table-wrap">
+          <table class="doc-table" id="claimTable">
+          <tbody>
+            <tr class="meta-header-row">
+              <th style="width:62%;">
+                <div class="note-token-bar">
+                  <span class="note-prefix">TASK / SEAP</span>
+                  <span class="note-slash">/</span>
+                  <input id="tableYear" type="text" value="2026" title="Financial Year" placeholder="2026" class="token-input" />
+                  <span class="note-slash">/</span>
+                  <input id="tableMonth" type="text" value="Sep" title="Claim Month" placeholder="Sep" class="token-input" />
+                  <span class="note-slash">/</span>
+                  <input id="tableEmpId" type="text" value="6374" title="Employee ID" placeholder="6374" class="token-input" />
+                  <span class="note-slash">/ Note file No:</span>
+                  <input id="tableNoteFileNum" type="text" value="1" placeholder="1" title="Note File Number" class="token-input token-num" />
+                </div>
+              </th>
+              <th style="width:38%;padding-left:14px;">
+                <div class="date-token-wrap">
+                  <label for="tableDt" class="cell-label">📅 Date of Claim (Dt)</label>
+                  <input id="tableDt" type="date" value="2026-09-09" class="clean-input" />
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <td style="width:60%;">
+                <label for="tableTrainer" class="cell-label">👤 Name of the Trainer</label>
+                <input id="tableTrainer" type="text" value="Ashok Kumar Naik Guguloth" placeholder="Trainer Full Name" class="clean-input" />
+              </td>
+              <td style="width:40%;padding-left:14px;">
+                <label for="tableEmpIdVal" class="cell-label">🆔 Employee ID</label>
+                <input id="tableEmpIdVal" type="text" value="6374" placeholder="e.g. 6374" class="clean-input" />
+              </td>
+            </tr>
+            <tr>
+              <td style="width:60%;">
+                <label for="tableDesignation" class="cell-label">💼 Designation</label>
+                <input id="tableDesignation" type="text" value="Technical Trainer" placeholder="e.g. Technical Trainer" class="clean-input" />
+              </td>
+              <td style="width:40%;padding-left:14px;">
+                <label for="tableDept" class="cell-label">🏢 Department / Location</label>
+                <input id="tableDept" type="text" value="SEAP" placeholder="e.g. SEAP" class="clean-input" />
+              </td>
+            </tr>
+            <tr>
+              <td style="width:60%;">
+                <label for="tableCollege" class="cell-label">🎓 Name of the College(s) / Center</label>
+                <input id="tableCollege" type="text" value="RC Khammam" placeholder="e.g. RC Khammam" class="clean-input" />
+              </td>
+              <td style="width:40%;padding-left:14px;">
+                <label for="tableCourse" class="cell-label">📖 Course Title</label>
+                <input id="tableCourse" type="text" value="FrontEnd" placeholder="e.g. FrontEnd" class="clean-input" />
+              </td>
+            </tr>
+            <tr>
+              <td style="width:60%;">
+                <label for="tableDistrict" class="cell-label">📍 District</label>
+                <input id="tableDistrict" type="text" value="Khammam" placeholder="e.g. Khammam" class="clean-input" />
+              </td>
+              <td style="width:40%;padding-left:14px;">
+                <label for="tableTravel" class="cell-label">🗓️ Training / Travel Date</label>
+                <input id="tableTravel" type="date" value="2026-09-01" class="clean-input" />
+              </td>
+            </tr>
+            <tr class="sub-row">
+              <td colspan="2" class="sub-cell">
+                <div class="sub-memo-box">
+                  <div class="sub-line"><strong>Sub:</strong> Reimbursement of expenditure for an amount of <strong style="color:var(--navy);">Rs. (<span id="tableAmount">0</span>/-)</strong> Reg.</div>
+                  <div class="ref-line"><strong>Ref:</strong> Training Calendar.</div>
+                  <input type="hidden" id="regRef" value="Training Calendar." />
+                </div>
+              </td>
+            </tr>
+            <tr class="amount-row-table">
+              <td style="width:50%;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label for="amount" class="cell-label" style="margin:0;white-space:nowrap;">💰 Amount (Rs.):</label>
+                  <input id="amount" type="number" min="0" step="1" placeholder="0" class="clean-input" style="width:140px;display:inline-block;" />
+                </div>
+              </td>
+              <td style="width:50%;text-align:right;">
+                <div class="amount-words-pill">
+                  <span style="font-size:11.5px;color:var(--muted);text-transform:uppercase;font-weight:700;">In Words:</span>
+                  <strong id="tableWords" style="color:var(--navy-dark);margin-left:6px;">Zero</strong>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <!-- Hidden fields for JS compatibility -->
+        <input type="hidden" id="tableNoteNo" value="TASK/SEAP/2026/Sep/6374" />
+        <input type="hidden" id="noteFileNo" value="TASK/SEAP/2026/Sep/6374" />
+        <input type="hidden" id="dt" value="2026-10-06" />
+        <input type="hidden" id="trainerName" value="Ashok Kumar NaiK Guguloth" />
+        <input type="hidden" id="empId" value="6374" />
+        <input type="hidden" id="designation" value="Technical Trainer" />
+        <input type="hidden" id="department" value="SEAP" />
+        <input type="hidden" id="college" value="RC Khammam" />
+        <input type="hidden" id="course" value="FrontEnd" />
+        <input type="hidden" id="district" value="Khammam" />
+        <input type="hidden" id="travelDate" value="2026-10-06" />
+      </section>
+
+      <!-- ============ SIDE SUMMARY ============ -->
+      <aside class="side">
+        <section class="card summary-card">
+          <div class="card-header-flex" style="margin-bottom:12px;border-bottom:none;padding-bottom:0;">
+            <h3 class="card-title" style="margin:0;font-size:16px;">💳 Claim Summary</h3>
+            <span class="pill pill-approved" style="font-size:11px;">● Active</span>
+          </div>
+
+          <!-- Total Amount Callout -->
+          <div class="total-callout-box">
+            <span class="callout-label">Total Reimbursement Amount</span>
+            <div class="callout-value" id="summaryAmount">Rs. (0/-)</div>
+            <div class="callout-words" id="summaryWords">&mdash;</div>
+          </div>
+
+          <dl class="summary-list">
+            <div>
+              <dt>Note File Reference</dt>
+              <dd id="claimRef" style="font-family:monospace;font-size:13.5px;color:var(--navy);">TASK/SEAP/2026/Sep/6374</dd>
+            </div>
+            <div>
+              <dt>Verification Status</dt>
+              <dd><span class="pill pill-draft">Draft (Auto-calculated)</span></dd>
+            </div>
+          </dl>
+
+          <div class="summary-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+            <button id="downloadPdfBtn" class="btn btn-primary" type="button" style="padding:12px 18px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <span>📥</span> Download Claim PDF
+            </button>
+            <button id="loadSampleBtn" class="btn btn-ghost" type="button" style="padding:10px 18px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <span>🔄</span> Reset to Sample Data
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ============ TRAVEL BREAKDOWN TABLE ============ -->
+    <section class="card" id="travelBreakdownCard">
+      <div class="card-header-flex">
+        <div>
+          <h3 class="card-title" style="margin:0;border:none;padding:0;">🚗 2 &middot; Travel Breakdown &amp; Conveyance Expenses</h3>
+          <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Itemized record of city travel with distance, conveyance mode, and food allowances.</p>
+        </div>
+        <button id="addTravelRowBtn" type="button" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-weight:700;">
+          <span style="font-size:16px;line-height:1;">+</span> Add Travel Row
+        </button>
+      </div>
+
+      <!-- Smart Calculator Banner -->
+      <div class="calculator-tip-banner">
+        <span class="tip-icon">⚡</span>
+        <div>
+          <strong>Smart Travel Calculator:</strong> In the <strong>KMS</strong> column, type multiplication formulas like <code>8*10</code>, <code>35*10</code>, or <code>40.5*10</code> to calculate allowances automatically!
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="travel-table">
+        <thead>
+          <tr>
+            <th>📅 Travel Date</th>
+            <th>📍 Origin (From)</th>
+            <th>🏁 Destination (To)</th>
+            <th>⚡ KMS (Distance &times; Rate)</th>
+            <th>🛵 Travel Mode</th>
+            <th>🍱 Food / Water</th>
+            <th>💰 Row Total</th>
+            <th class="no-print" style="width:50px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="travelTableBody">
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="200" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">280</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="0" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">80</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="200" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">280</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="0" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">80</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="200" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">280</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="date" value="2026-10-24" class="travel-input" /></td>
+            <td><input type="text" value="College" class="travel-input" /></td>
+            <td><input type="text" value="Home" class="travel-input" /></td>
+            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
+            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td>
+              <div class="travel-currency-wrap">
+                <span class="currency-prefix">₹</span>
+                <input type="number" value="0" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
+              </div>
+            </td>
+            <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">80</span></td>
+            <td class="no-print">
+              <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteTravelRow(this)">&times;</button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row" style="background:#ffffff;color:#000000;">
+            <td colspan="6" style="background:#ffffff;color:#000000;"><strong>Total Amount: (Rupees One Thousand Eighty Only)</strong></td>
+            <td style="background:#ffffff;color:#000000;"><strong style="color:#000000;">₹1,080</strong></td>
+            <td class="no-print" style="background:#ffffff;color:#000000;"></td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+      <div class="table-scroll-hint no-print">
+        <span>&larr; Scroll horizontally to view all travel columns &rarr;</span>
+      </div>
+    </section>
+
+    <!-- ============ REIMBURSEMENT NARRATIVE ============ -->
+    <section class="card" id="narrativeCard">
+      <div class="card-header-flex" style="margin-bottom:12px;">
+        <h3 class="card-title" style="margin:0;border:none;padding:0;">📜 3 &middot; Reimbursement Request Statement</h3>
+        <span class="pill pill-draft" style="background:#e0f2fe;color:#0369a1;">Live Synced</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;margin:0 0 12px;">
+        Formal declaration statement automatically rendered on Page 1 of the official reimbursement note file:
+      </p>
+      <div class="narrative">
+        <p style="margin-bottom:14px;text-indent:32px;">As per the reference and subject cited above, a training was scheduled at the below mentioned colleges / Regional Center.</p>
+        <p style="margin-bottom:14px;">In this regard, I, <strong id="narrativeTrainer" class="token-name">(Trainer Name)</strong>, Emp Id <strong id="narrativeEmpId" class="token-emp">(Emp Id)</strong> spent an amount of <strong class="token-amount">Rs. <span id="narrativeAmount">0</span> /-</strong> (<span id="narrativeWords" class="token-words">Zero</span>).</p>
+        <p style="margin-bottom:0;">Hence, I request you to reimburse the expenditure incurred by me. Submitted for Kind Approval.</p>
+      </div>
+    </section>
+
+    <!-- ============ APPROVAL WORKFLOW (HIDDEN ON WEB UI, RETAINED IN PDF TEMPLATE) ============ -->
+    <section class="card" id="approvalWorkflowCard" style="display: none;">
+      <h3 class="card-title">Approval Workflow &mdash; Submitted for Kind Approval</h3>
+      <table class="approval-table">
+        <tbody>
+          <tr>
+            <td>
+              <div class="approver-box"><span class="approver-title">Initiator</span></div>
+            </td>
+            <td>
+              <div class="approver-box"><span class="approver-title">Coordinator</span></div>
+            </td>
+            <td>
+              <div class="approver-box"><span class="approver-title">Supervisor</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="approver-box"><span class="approver-title">Manager Accounts</span></div>
+            </td>
+            <td class="cell-null">
+              <div class="approver-box"><span class="approver-title null-text">Null</span></div>
+            </td>
+            <td>
+              <div class="approver-box"><span class="approver-title">COO / Director HR & A</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="cell-null">
+              <div class="approver-box"><span class="approver-title null-text">Null</span></div>
+            </td>
+            <td>
+              <div class="approver-box"><span class="approver-title">Chief Executive Officer</span></div>
+            </td>
+            <td class="cell-null">
+              <div class="approver-box"><span class="approver-title null-text">Null</span></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ SUPPORTING DOCUMENTS / IMAGES UPLOAD ============ -->
+    <section class="card" id="uploadImagesCard">
+      <div class="card-header-flex">
+        <div>
+          <h3 class="card-title" style="margin:0;border:none;padding:0;">📎 4 &middot; Supporting Documents / Training Proofs (PDF Page 2)</h3>
+          <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">
+            Attach 3 mandatory photo proofs. They are automatically optimized and arranged into an official single-column layout on Page 2.
+          </p>
+        </div>
+        <span class="pill pill-draft" style="background:#e0f2fe;color:#0369a1;">Page 2 Attachments</span>
+      </div>
+
+      <div class="image-upload-grid">
+        <!-- Image 1: Training Photo -->
+        <div class="image-upload-box">
+          <div class="upload-header">
+            <strong>1. Classroom Training Photo</strong>
+            <span class="upload-sub">Photo with students &amp; training banner</span>
+          </div>
+          <div class="image-preview-area" id="previewArea1" onclick="document.getElementById('fileInput1').click()" title="Click or drag image to upload" style="cursor: pointer;">
+            <img id="webImgPreview1" src="" alt="Training Photo Preview" class="img-preview" />
+            <div id="emptyPlaceholder1" class="empty-placeholder" style="display:none;">
+              <span style="font-size: 28px; display: block; margin-bottom: 6px;">📷</span>
+              <strong>Click or drag photo here</strong>
+              <span style="display:block;font-size:11px;color:#94a3b8;margin-top:2px;">PNG, JPG up to 10MB</span>
+            </div>
+          </div>
+          <div class="upload-controls">
+            <input type="file" id="fileInput1" accept="image/*" style="display:none;" onclick="this.value=null;" onchange="handleImageSelect(this, 1)" />
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('fileInput1').click()">📁 Choose Image 1</button>
+            <button type="button" class="btn btn-del-row" id="clearBtn1" title="Clear Image 1" onclick="clearImage(1)">&times;</button>
+          </div>
+        </div>
+
+        <!-- Image 2: Portal Screenshot -->
+        <div class="image-upload-box">
+          <div class="upload-header">
+            <strong>2. Training Details / Portal Screenshot</strong>
+            <span class="upload-sub">College portal confirmation &amp; student count</span>
+          </div>
+          <div class="image-preview-area" id="previewArea2" onclick="document.getElementById('fileInput2').click()" title="Click or drag image to upload" style="cursor: pointer;">
+            <img id="webImgPreview2" src="" alt="Portal Screenshot Preview" class="img-preview" />
+            <div id="emptyPlaceholder2" class="empty-placeholder" style="display:none;">
+              <span style="font-size: 28px; display: block; margin-bottom: 6px;">🖼️</span>
+              <strong>Click or drag screenshot here</strong>
+              <span style="display:block;font-size:11px;color:#94a3b8;margin-top:2px;">Portal verification capture</span>
+            </div>
+          </div>
+          <div class="upload-controls">
+            <input type="file" id="fileInput2" accept="image/*" style="display:none;" onclick="this.value=null;" onchange="handleImageSelect(this, 2)" />
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('fileInput2').click()">📁 Choose Image 2</button>
+            <button type="button" class="btn btn-del-row" id="clearBtn2" title="Clear Image 2" onclick="clearImage(2)">&times;</button>
+          </div>
+        </div>
+
+        <!-- Image 3: Google Maps Route Screenshot (Google Pic) -->
+        <div class="image-upload-box">
+          <div class="upload-header">
+            <strong>3. Google Map Screenshot (Google Pic)</strong>
+            <span class="upload-sub">Google Maps route, distance &amp; travel proof</span>
+          </div>
+          <div class="image-preview-area" id="previewArea3" onclick="document.getElementById('fileInput3').click()" title="Click or drag image to upload" style="cursor: pointer;">
+            <img id="webImgPreview3" src="" alt="Google Map Screenshot Preview" class="img-preview" />
+            <div id="emptyPlaceholder3" class="empty-placeholder" style="display:none;">
+              <span style="font-size: 28px; display: block; margin-bottom: 6px;">🗺️</span>
+              <strong>Click or drag map screenshot</strong>
+              <span style="display:block;font-size:11px;color:#94a3b8;margin-top:2px;">Route &amp; mileage verification</span>
+            </div>
+          </div>
+          <div class="upload-controls">
+            <input type="file" id="fileInput3" accept="image/*" style="display:none;" onclick="this.value=null;" onchange="handleImageSelect(this, 3)" />
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('fileInput3').click()">📁 Choose Image 3</button>
+            <button type="button" class="btn btn-del-row" id="clearBtn3" title="Clear Image 3" onclick="clearImage(3)">&times;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SUBMIT ACTION BUTTON ============ -->
+    <div class="submit-action-wrap" style="margin: 25px 0 30px; text-align: center;">
+      <button id="submitBtn" class="btn btn-primary" type="button" style="padding: 15px 36px; font-size: 16px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%); box-shadow: 0 8px 20px -4px rgba(22, 50, 79, 0.35); cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: auto; min-width: 280px;">
+        <span style="font-size: 18px;">✈️</span> Submit for Kind Approval
+      </button>
+      <p style="margin: 8px 0 0; font-size: 12.5px; color: var(--muted);">
+        Submits your claim to local records and prepares the official 2-page print-ready reimbursement document.
+      </p>
+    </div>
+
+    <!-- ============ RECENT CLAIMS ============ -->
+    <section class="card" id="recentClaimsCard">
+      <div class="card-header-flex" style="margin-bottom:12px;">
+        <h3 class="card-title" style="margin:0;border:none;padding:0;">🕒 Recent Submitted Claims</h3>
+        <span class="pill pill-draft" style="font-size:11px;">Local Archive</span>
+      </div>
+      <ul id="historyList" class="history-list">
+        <li class="history-empty">No claims submitted yet in this session. Click "Submit for Kind Approval" above to record a claim.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      TASK / SEAP &middot; Training Reimbursement With-in City &middot; Note file based claim workflow
+    </div>
+  </footer>
+
+  <!-- ============ SUCCESS MODAL ============ -->
+  <div class="modal-overlay" id="successModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-icon">&#10003;</div>
+      <h3>Reimbursement Request Submitted!</h3>
+      <p>Your claim has been recorded under reference:</p>
+      <div class="modal-ref-badge" id="modalRef" style="font-family:monospace;font-size:16px;font-weight:800;color:var(--navy);background:#f1f5f9;padding:8px 14px;border-radius:8px;margin:10px auto;display:inline-block;"></div>
+      <p id="modalMsg" class="modal-msg"></p>
+      <div class="modal-actions" style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+        <button id="downloadModalPdfBtn" class="btn btn-primary" type="button" style="width:auto;display:inline-flex;align-items:center;gap:6px;">
+          <span>📥</span> Download Claim PDF
+        </button>
+        <button id="closeModalBtn" class="btn btn-ghost" type="button" style="width:auto;">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PDF TEMPLATE CONTAINER (Hidden from view, accessible to html2pdf) ============ -->
+  <div id="pdfContainer" style="position:absolute; left:-9999px; top:0; width:190mm; opacity:0; pointer-events:none; z-index:-9999;">
+    <div id="pdfTemplate" style="width:190mm; background:#ffffff; color:#000000; font-family:'Times New Roman',serif; padding:8px 15px; box-sizing:border-box;">
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
+        <tr>
+          <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfYear">2026</span> / <span id="pdfMonth">Sep</span> / <span id="pdfEmpId">6374</span> / Note file No: <span id="pdfNoteFileNum">1</span></strong></td>
+          <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Dt:</strong> <span id="pdfDt">09/09/2026</span></td>
+        </tr>
+      </table>
+
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
+        <tr>
+          <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>Name of the Trainer:</strong> <span id="pdfTrainer">Ashok Kumar Naik Guguloth</span></td>
+          <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Emp Id:</strong> <span id="pdfEmpId2">6374</span></td>
+        </tr>
+        <tr>
+          <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>Designation:</strong> <span id="pdfDesignation">Technical Trainer</span></td>
+          <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Department / Location:</strong> <span id="pdfDept">SEAP</span></td>
+        </tr>
+        <tr>
+          <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>Name of the College(s):</strong> <span id="pdfCollege">RC Khammam</span></td>
+          <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Course Title:</strong> <span id="pdfCourse">FrontEnd</span></td>
+        </tr>
+        <tr>
+          <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>District:</strong> <span id="pdfDistrict">Khammam</span></td>
+          <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Travel Date:</strong> <span id="pdfTravel">01.09.2026</span></td>
+        </tr>
+      </table>
+
+      <div style="border:none;padding-top:0px;margin-top:2px;">
+        <p style="font-size:16px;margin:1px 0;"><strong>Sub:</strong> Reimbursement of expenditure for an amount of <strong>Rs. (<span id="pdfAmount">1,080</span>/-) Reg.</strong></p>
+        <p style="font-size:16px;margin:1px 0;"><strong>Ref:</strong> <span id="pdfRegRef">Training Calendar.</span></p>
+        <p style="font-size:16px;margin:1px 0;text-align:center;letter-spacing:4px;">*****</p>
+        <p style="font-size:16px;text-align:justify;margin:4px 0 4px 12px;line-height:1.45;text-indent:48px;">As per the reference and subject cited above, a training was scheduled at the below mentioned colleges / Regional Center.</p>
+      </div>
+
+      <table id="pdfTravelTable" style="width:100%;border-collapse:collapse;margin-top:4px;margin-bottom:50px;font-size:16px;border:1px solid #444;">
+        <thead>
+          <tr style="background:#ffffff;color:#000000;">
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">Travel Date</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">From</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">To</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">KMS</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">Mode</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">Food/Water</th>
+            <th style="padding:2.5px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">Total</th>
+          </tr>
+        </thead>
+        <tbody id="pdfTravelBody">
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹200</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹280</td></tr>
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹0</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹80</td></tr>
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹200</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹280</td></tr>
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹0</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹80</td></tr>
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹200</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹280</td></tr>
+          <tr><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">24-10-2026</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">College</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Home</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">8KM * ₹10 = ₹80</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">Bike</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹0</td><td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">₹80</td></tr>
+        </tbody>
+        <tfoot id="pdfTravelFoot">
+          <tr style="background:#ffffff;color:#000000;font-weight:bold;">
+            <td colspan="6" style="padding:3px 6px;border:1px solid #444;text-align:left;background:#ffffff;color:#000000;font-size:16px;">Total Amount: (<span id="pdfTravelTotalWords">Rupees One Thousand Eighty Only</span>)</td>
+            <td id="pdfTravelTotalNum" style="padding:3px 3px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:16px;">₹1,080</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div style="margin-top:0px;">
+        <p style="font-size:16px;text-align:justify;margin:2px 0;line-height:1.45;">In this regard, I, (<strong><span id="pdfTrainer2">Ashok Kumar Naik Guguloth</span></strong>), Emp Id (<strong><span id="pdfEmpId3">6374</span></strong>) spent an amount of Rs. <strong><span id="pdfAmount2">1,080</span> /-</strong> (<strong><span id="pdfWords">Rupees One Thousand Eighty Only</span></strong>).</p>
+        <p style="font-size:16px;text-align:justify;margin:2px 0;line-height:1.45;">Hence, I request you to reimburse the expenditure incurred by me.</p>
+        <p style="font-size:16px;margin:4px 0 2px 0;">Submitted for Kind Approval.</p>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;margin-top:4px;font-family:Arial,sans-serif;font-size:13px;table-layout:fixed;border:none;text-align:center;">
+        <tr>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Initiator</strong></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Coordinator</strong></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Supervisor</strong></td>
+        </tr>
+        <tr>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Manager Accounts</strong></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>COO / Director HR & A</strong></td>
+        </tr>
+        <tr>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Chief Executive Officer</strong></td>
+          <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+        </tr>
+      </table>
+
+      <!-- Bottom Right Version Footer (Page 1 Only, as in reference file local_reimburse) -->
+      <div id="pdfPage1Version" style="text-align:right;font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#333333;margin-top:4px;padding-right:2px;  ">
+        Version March 2025
+      </div>
+
+      <!-- ============ PAGE 2: SUPPORTING DOCUMENTS & PROOF ============ -->
+      <div class="html2pdf__page-break" style="page-break-before: always; break-before: page; height: 0; margin: 0; padding: 0;"></div>
+
+      <div id="pdfPage2" style="width: 100%; padding-top: 4px; box-sizing: border-box; page-break-inside: avoid;">
+        <div style="border-bottom: 2px solid #16324f; padding-bottom: 4px; margin-bottom: 8px;">
+          <h4 style="margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #16324f;">Supporting Documents &amp; Route Verification</h4>
+        </div>
+
+        <!-- Single Column: All 3 Pictures Stacked Vertically -->
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+          <!-- Image 1 Container -->
+          <div id="pdfImgWrapper1" style="width: 100%; text-align: center;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: left; color: #222;">
+              1. Classroom Training Photo:
+            </div>
+            <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
+              <img id="pdfImg1" src="" alt="Classroom Training Photo" style="max-width: 100%; max-height: 74mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </div>
+          </div>
+
+          <!-- Image 2 Container -->
+          <div id="pdfImgWrapper2" style="width: 100%; text-align: center;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: left; color: #222;">
+              2. Training Details / Portal Screenshot:
+            </div>
+            <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
+              <img id="pdfImg2" src="" alt="Portal Screenshot" style="max-width: 100%; max-height: 74mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </div>
+          </div>
+
+          <!-- Image 3 Container: Google Pic -->
+          <div id="pdfImgWrapper3" style="width: 100%; text-align: center;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: left; color: #222;">
+              3. Google Maps Route &amp; Travel Distance Screenshot (Google Pic):
+            </div>
+            <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
+              <img id="pdfImg3" src="" alt="Google Maps Route Screenshot" style="max-width: 100%; max-height: 74mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sample_images_data.js"></script>
+  <script src="html2pdf.bundle.min.js"></script>
+  <script>
+    if (typeof html2pdf === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\\/script>');
+    }
+  </script>
+  <script src="script.js?v=4.0"></script>
+  <noscript>
+    <style>
+      @media print {
+        body { font-family: 'Times New Roman', serif; color: #000; }
+        .site-header, .side, .modal-overlay, .site-footer { display: none !important; }
+        .container { max-width: 100%; padding: 0 20px; }
+        .card { border: none; box-shadow: none; padding: 0; }
+        .travel-table th { background: #16324f !important; color: #fff !important; }
+        .approval-table th { background: #16324f !important; color: #fff !important; }
+      }
+    </style>
+  </noscript>
+</body>
+</html>
