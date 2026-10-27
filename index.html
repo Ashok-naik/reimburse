@@ -515,7 +515,8 @@
   <!-- ============ PDF TEMPLATE CONTAINER (Hidden from view, accessible to html2pdf) ============ -->
   <div id="pdfContainer" style="position:absolute; left:-9999px; top:0; width:190mm; opacity:0; pointer-events:none; z-index:-9999;">
     <div id="pdfTemplate" style="width:190mm; background:#ffffff; color:#000000; font-family:'Times New Roman',serif; padding:8px 15px; box-sizing:border-box;">
-      <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
+      <div id="pdfPage1" style="position:relative; width:100%; height:282mm; box-sizing:border-box;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
         <tr>
           <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfYear">2026</span> / <span id="pdfMonth">Sep</span> / <span id="pdfEmpId">6374</span> / Note file No: <span id="pdfNoteFileNum">1</span></strong></td>
           <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Dt:</strong> <span id="pdfDt">09/09/2026</span></td>
@@ -601,12 +602,13 @@
       </table>
 
       <!-- Bottom Right Version Footer (Page 1 Only, as in reference file local_reimburse) -->
-      <div id="pdfPage1Version" style="text-align:right;font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#333333;margin-top:4px;padding-right:2px;  ">
+      <div id="pdfPage1Version" style="position:absolute; bottom:0px; right:0px; text-align:right; font-family:Calibri,Arial,sans-serif; font-size:10pt; color:#333333; margin:0; padding-right:2px;">
         Version March 2025
       </div>
+    </div>
 
-      <!-- ============ PAGE 2: SUPPORTING DOCUMENTS & PROOF ============ -->
-      <div class="html2pdf__page-break" style="page-break-before: always; break-before: page; height: 0; margin: 0; padding: 0;"></div>
+    <!-- ============ PAGE 2: SUPPORTING DOCUMENTS & PROOF ============ -->
+    <div class="html2pdf__page-break" style="page-break-before: always; break-before: page; height: 0; margin: 0; padding: 0;"></div>
 
       <div id="pdfPage2" style="width: 100%; padding-top: 4px; box-sizing: border-box; page-break-inside: avoid;">
         <div style="border-bottom: 2px solid #16324f; padding-bottom: 4px; margin-bottom: 8px;">

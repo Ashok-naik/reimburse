@@ -1045,7 +1045,14 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   }
 }
 
-#pdfPage1Version{
-  position: relative;
-  top:100px;
+#pdfPage1Version {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  top: auto;
+  margin: 0;
+  text-align: right;
+  font-family: Calibri, Arial, sans-serif;
+  font-size: 10pt;
+  color: #333333;
 }

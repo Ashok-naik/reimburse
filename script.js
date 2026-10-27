@@ -418,6 +418,14 @@ function syncPdfTravelTable() {
   if (travelTotalWords) {
     travelTotalWords.textContent = grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Zero';
   }
+
+  // Adjust table margin if rows are added, keeping exact 50px gap for standard 6 rows
+  const pdfTravelTable = document.getElementById('pdfTravelTable');
+  if (pdfTravelTable) {
+    const rowCount = srcRows.length;
+    const mb = rowCount <= 6 ? 50 : Math.max(8, 50 - (rowCount - 6) * 12);
+    pdfTravelTable.style.marginBottom = mb + 'px';
+  }
 }
 
 /* ---------- Sample loader ---------- */
