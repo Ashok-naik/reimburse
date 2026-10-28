@@ -414,6 +414,12 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   background: #ffffff;
 }
+.clean-input::placeholder,
+.token-input::placeholder {
+  color: #94a3b8;
+  font-style: normal;
+  opacity: 0.9;
+}
 
 .note-token-bar {
   display: flex;
@@ -490,10 +496,21 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   font-size: 13px;
 }
 
-.doc-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 14px; }
+.doc-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0 6px; font-size: 14px; }
 .doc-table th { text-align: left; padding: 6px 4px; border: none; color: var(--navy-dark); font-weight: 700; font-size: 13px; }
 .doc-table td { padding: 6px 4px; border: none; vertical-align: middle; }
 .doc-table tr.sub-row td { padding-top: 6px; }
+
+#claimTable td:first-child,
+#claimTable th:first-child {
+  width: 50%;
+  padding-right: 10px;
+}
+#claimTable td:last-child,
+#claimTable th:last-child {
+  width: 50%;
+  padding-left: 10px;
+}
 
 /* ============ Travel Table & Calculator ============ */
 .calculator-tip-banner {
@@ -516,27 +533,93 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
   font-weight: 700;
 }
 
-.travel-table { width: 100%; border-collapse: collapse; font-size: 13px; border-radius: 8px; overflow: hidden; }
+.travel-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13px;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 850px;
+}
 .travel-table th {
   background: #f8fafc;
   color: var(--navy-dark);
-  padding: 10px 8px;
+  padding: 10px 6px;
   text-align: center;
   font-weight: 700;
   font-size: 12.5px;
   letter-spacing: 0.3px;
   border: 1px solid #e2e8f0;
+  vertical-align: middle;
 }
 .travel-table td {
-  padding: 8px 6px;
+  padding: 8px 5px;
   border: 1px solid #e2e8f0;
   text-align: center;
   background: #ffffff;
+  vertical-align: middle;
   transition: background 0.15s ease;
 }
 .travel-table tbody tr:hover td {
   background: #f0f7ff;
 }
+
+/* Webpage Travel Table Column Widths (proportional to text/content size) */
+#travelBreakdownCard .travel-table th:nth-child(1),
+#travelBreakdownCard .travel-table tbody td:nth-child(1) {
+  width: 5%;
+  min-width: 45px;
+  text-align: center;
+}
+#travelBreakdownCard .travel-table th:nth-child(2),
+#travelBreakdownCard .travel-table tbody td:nth-child(2) {
+  width: 14%;
+  min-width: 125px;
+}
+#travelBreakdownCard .travel-table th:nth-child(3),
+#travelBreakdownCard .travel-table tbody td:nth-child(3) {
+  width: 12%;
+  min-width: 105px;
+}
+#travelBreakdownCard .travel-table th:nth-child(4),
+#travelBreakdownCard .travel-table tbody td:nth-child(4) {
+  width: 12%;
+  min-width: 105px;
+}
+#travelBreakdownCard .travel-table th:nth-child(5),
+#travelBreakdownCard .travel-table tbody td:nth-child(5) {
+  width: 24%;
+  min-width: 190px;
+}
+#travelBreakdownCard .travel-table th:nth-child(6),
+#travelBreakdownCard .travel-table tbody td:nth-child(6) {
+  width: 10%;
+  min-width: 85px;
+}
+#travelBreakdownCard .travel-table th:nth-child(7),
+#travelBreakdownCard .travel-table tbody td:nth-child(7) {
+  width: 10%;
+  min-width: 85px;
+}
+#travelBreakdownCard .travel-table th:nth-child(8),
+#travelBreakdownCard .travel-table tbody td:nth-child(8) {
+  width: 9%;
+  min-width: 80px;
+}
+#travelBreakdownCard .travel-table th:nth-child(9),
+#travelBreakdownCard .travel-table tbody td:nth-child(9) {
+  width: 4%;
+  min-width: 45px;
+}
+
+.travel-sno {
+  font-weight: 700;
+  color: var(--navy-dark);
+  text-align: center;
+  user-select: none;
+}
+
 .total-row td {
   border-top: 2px solid var(--navy);
   font-weight: 700;
@@ -550,9 +633,11 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
 
 .travel-input {
   font: inherit;
-  font-size: 13.5px;
-  width: 95%;
-  padding: 6px 8px;
+  font-size: 13px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px 6px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   text-align: center;
@@ -562,6 +647,90 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
 .travel-input:hover { border-color: #94a3b8; }
 .travel-input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
 .travel-kms-input { font-weight: 600; color: #1e3a8a; }
+
+/* Table Header KMS auto-calculator input (compact 60% size) */
+.header-kms-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.header-kms-title {
+  white-space: nowrap;
+}
+.header-kms-input-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  padding: 1px 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.header-kms-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--navy, #16324f);
+  cursor: pointer;
+  user-select: none;
+}
+input.header-kms-field,
+input#headerKmsInput {
+  width: 34px !important;
+  max-width: 38px !important;
+  min-width: 28px !important;
+  height: 20px !important;
+  padding: 1px 3px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #1e3a8a !important;
+  text-align: center !important;
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 3px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  line-height: normal !important;
+  outline: none;
+  transition: all 0.15s ease;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input#headerKmsInput::-webkit-inner-spin-button,
+input#headerKmsInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input#headerKmsInput::placeholder {
+  font-size: 60%;
+  opacity: 0.6;
+}
+input.header-kms-field:focus,
+input#headerKmsInput:focus {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+}
+.header-kms-unit {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* Static Food/Water display */
+.travel-food-static {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy-dark, #0f172a);
+  padding: 4px 6px;
+  letter-spacing: 0.2px;
+}
+.travel-food-static.zero {
+  color: #64748b;
+  font-weight: 500;
+}
 
 .travel-currency-wrap {
   display: inline-flex;
@@ -845,7 +1014,7 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
     gap: 10px;
   }
   .travel-table {
-    min-width: 680px;
+    min-width: 850px;
   }
   .table-scroll-hint {
     display: block;
@@ -974,7 +1143,7 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
 
   /* Travel Table Container */
   .travel-table {
-    min-width: 680px;
+    min-width: 850px;
     margin: 0;
   }
   .table-scroll-hint {
@@ -1046,13 +1215,5 @@ input:focus, select:focus { outline: 2px solid var(--navy-light); outline-offset
 }
 
 #pdfPage1Version {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  top: auto;
-  margin: 0;
-  text-align: right;
-  font-family: Calibri, Arial, sans-serif;
-  font-size: 10pt;
-  color: #333333;
+  display: none;
 }

@@ -78,11 +78,11 @@ function numberToWords(num) {
 }
 
 function claimRefFor(empId, noteFileNum) {
-  const id = (empId || '').trim();
+  const id = (empId || document.getElementById('tableEmpIdVal')?.placeholder || document.getElementById('tableEmpId')?.placeholder || '6374').trim();
   const num = (noteFileNum !== undefined && noteFileNum !== null ? String(noteFileNum) : (document.getElementById('tableNoteFileNum')?.value || '1')).trim();
   const yr = (document.getElementById('tableYear')?.value || '2026').trim();
   const mo = (document.getElementById('tableMonth')?.value || 'Sep').trim();
-  const base = 'TASK/SEAP/' + yr + '/' + mo + '/' + (id || '5800');
+  const base = 'TASK/SEAP/' + yr + '/' + mo + '/' + (id || '6374');
   return num ? base + ' / Note file No: ' + num : base;
 }
 
@@ -323,31 +323,55 @@ function getTodayIso() {
   return `${yr}-${mo}-${day}`;
 }
 
+function updateTravelRowNumbers() {
+  const tbody = document.getElementById('travelTableBody') || document.querySelector('.travel-table tbody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  rows.forEach((tr, index) => {
+    let snoCell = tr.querySelector('.travel-sno');
+    if (!snoCell) {
+      snoCell = document.createElement('td');
+      snoCell.className = 'travel-sno';
+      tr.insertBefore(snoCell, tr.firstChild);
+    }
+    snoCell.textContent = String(index + 1);
+  });
+}
+
 function addTravelRow(data = {}) {
   const tbody = document.getElementById('travelTableBody') || document.querySelector('.travel-table tbody');
   if (!tbody) return;
 
+  const headerKm = document.getElementById('headerKmsInput')?.value;
+  const defaultFormula = (headerKm && !isNaN(parseFloat(headerKm)))
+    ? `${parseFloat(headerKm)}KM * ₹10 = ₹${Math.round(parseFloat(headerKm) * 10)}`
+    : '8KM * ₹10 = ₹80';
+
+  const rows = tbody.querySelectorAll('tr');
+  const rowIndex = rows.length;
+  // Static repeating flow: 1st trip of day (even index 0, 2, 4...) is ₹200, 2nd trip (odd index 1, 3, 5...) is ₹0
+  const defaultFood = (rowIndex % 2 === 0) ? 200 : 0;
+  const food = data.food !== undefined ? Number(data.food) : defaultFood;
+
   const today = getTodayIso();
   const dt = data.date || today;
-  const from = data.from || 'Home';
-  const to = data.to || 'College';
-  const kms = data.kms || '8KM * ₹10 = ₹80';
+  const from = data.from || (rowIndex % 2 === 0 ? 'Home' : 'College');
+  const to = data.to || (rowIndex % 2 === 0 ? 'College' : 'Home');
+  const kms = data.kms || defaultFormula;
   const mode = data.mode || 'Bike';
-  const food = data.food !== undefined ? data.food : 0;
   const total = data.total !== undefined ? data.total : (Number(food) + parseKmsAllowance(kms));
 
   const tr = document.createElement('tr');
   tr.innerHTML = `
+    <td class="travel-sno">${rowIndex + 1}</td>
     <td><input type="date" value="${dt}" class="travel-input" /></td>
     <td><input type="text" value="${from}" class="travel-input" /></td>
     <td><input type="text" value="${to}" class="travel-input" /></td>
     <td><input type="text" value="${kms}" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
     <td><input type="text" value="${mode}" class="travel-input" /></td>
     <td>
-      <div class="travel-currency-wrap">
-        <span class="currency-prefix">₹</span>
-        <input type="number" value="${food}" class="travel-food-input" min="0" step="1" placeholder="0" oninput="updateTravelRow(this)" />
-      </div>
+      <span class="travel-food-static ${Number(food) === 0 ? 'zero' : ''}">₹${food}</span>
+      <input type="hidden" class="travel-food-input" value="${food}" />
     </td>
     <td><span style="font-weight:600;margin-right:2px;">₹</span><span class="travel-total">${total}</span></td>
     <td class="no-print">
@@ -357,7 +381,42 @@ function addTravelRow(data = {}) {
 
   attachTravelRowListeners(tr);
   tbody.appendChild(tr);
+  updateTravelRowNumbers();
   updateTravelGrandTotal();
+}
+
+function refreshFoodWaterFlow() {
+  const tbody = document.getElementById('travelTableBody') || document.querySelector('.travel-table tbody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  rows.forEach((tr, index) => {
+    // Alternating static flow: 1st row = 200, 2nd row = 0, 3rd row = 200, 4th row = 0...
+    const foodVal = (index % 2 === 0) ? 200 : 0;
+    const foodSpan = tr.querySelector('.travel-food-static');
+    const foodHidden = tr.querySelector('.travel-food-input');
+
+    if (foodSpan) {
+      foodSpan.textContent = `₹${foodVal}`;
+      if (foodVal === 0) {
+        foodSpan.classList.add('zero');
+      } else {
+        foodSpan.classList.remove('zero');
+      }
+    }
+    if (foodHidden) {
+      foodHidden.value = foodVal;
+    }
+
+    const totalSpan = tr.querySelector('.travel-total');
+    const kmsInput = tr.querySelector('.travel-kms-input');
+    const kmsVal = parseKmsAllowance(kmsInput ? kmsInput.value : '');
+    const rowTotal = foodVal + kmsVal;
+    if (totalSpan) totalSpan.textContent = rowTotal;
+  });
+
+  updateTravelRowNumbers();
+  updateTravelGrandTotal();
+  syncPdfTravelTable();
 }
 
 function deleteTravelRow(btn) {
@@ -369,14 +428,43 @@ function deleteTravelRow(btn) {
     return;
   }
   row.remove();
+  updateTravelRowNumbers();
+  refreshFoodWaterFlow();
+}
+
+function applyHeaderKmsToAllRows() {
+  const headerInput = document.getElementById('headerKmsInput');
+  if (!headerInput) return;
+  const raw = headerInput.value.trim();
+  if (raw === '') return;
+  const km = parseFloat(raw);
+  if (isNaN(km) || km < 0) return;
+
+  const rate = 10;
+  const formatted = `${km}KM * ₹${rate} = ₹${Math.round(km * rate)}`;
+
+  const rows = document.querySelectorAll('#travelTableBody tr');
+  rows.forEach(tr => {
+    const kmsInput = tr.querySelector('.travel-kms-input');
+    if (kmsInput) {
+      kmsInput.value = formatted;
+      updateTravelRow(kmsInput);
+    }
+  });
+
   updateTravelGrandTotal();
+  syncPdfTravelTable();
 }
 
 // Expose row management functions to global window scope
 window.addTravelRow = addTravelRow;
 window.deleteTravelRow = deleteTravelRow;
 window.updateTravelRow = updateTravelRow;
+window.updateTravelRowNumbers = updateTravelRowNumbers;
 window.syncPdfTravelTable = syncPdfTravelTable;
+window.fitPdfToSinglePage = fitPdfToSinglePage;
+window.applyHeaderKmsToAllRows = applyHeaderKmsToAllRows;
+window.refreshFoodWaterFlow = refreshFoodWaterFlow;
 
 function syncPdfTravelTable() {
   const srcRows = document.querySelectorAll('.travel-table tbody tr');
@@ -385,11 +473,12 @@ function syncPdfTravelTable() {
   targetBody.innerHTML = '';
 
   let grandTotal = 0;
-  srcRows.forEach(row => {
+  srcRows.forEach((row, index) => {
     const inputs = row.querySelectorAll('input');
     const totalSpan = row.querySelector('.travel-total');
     if (!inputs.length) return;
 
+    const sno = index + 1;
     const dt = fmtDate(inputs[0]?.value || '') || fmtDate(getTodayIso());
     const from = inputs[1]?.value || '';
     const to = inputs[2]?.value || '';
@@ -401,6 +490,7 @@ function syncPdfTravelTable() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
+      <td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">${sno}</td>
       <td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">${dt}</td>
       <td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">${from}</td>
       <td style="padding:2.5px 3px;border:1px solid #444;text-align:center;font-size:16px;">${to}</td>
@@ -419,13 +509,192 @@ function syncPdfTravelTable() {
     travelTotalWords.textContent = grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Zero';
   }
 
-  // Adjust table margin if rows are added, keeping exact 50px gap for standard 6 rows
-  const pdfTravelTable = document.getElementById('pdfTravelTable');
-  if (pdfTravelTable) {
-    const rowCount = srcRows.length;
-    const mb = rowCount <= 6 ? 50 : Math.max(8, 50 - (rowCount - 6) * 12);
-    pdfTravelTable.style.marginBottom = mb + 'px';
+  // Dynamically fit Page 1 layout to single page budget
+  fitPdfToSinglePage();
+}
+
+/**
+ * Dynamic PDF Page 1 Layout Adjuster
+ * Ensures all claim data, travel rows, full declaration, 3x3 approval matrix (with protected signing space),
+ * and Version March 2025 footer fit strictly within a single A4 page.
+ */
+function fitPdfToSinglePage() {
+  const page1 = document.getElementById('pdfPage1');
+  if (!page1) return { isValid: false, pageHeight: 0, maxHeight: 1035 };
+
+  // 281mm printable height - 12mm reserved for fixed footer & gap = 269mm @ 96 DPI (1016px ceiling)
+  const MAX_PAGE_HEIGHT = 1015;
+
+  const travelTable = document.getElementById('pdfTravelTable');
+  const travelThs = travelTable ? Array.from(travelTable.querySelectorAll('thead th')) : [];
+  const travelTds = travelTable ? Array.from(travelTable.querySelectorAll('tbody td, tfoot td')) : [];
+  const approvalTable = document.getElementById('pdfApprovalTable');
+  const approvalTds = approvalTable ? Array.from(approvalTable.querySelectorAll('td')) : [];
+  const declBlock = document.getElementById('pdfDeclarationBlock');
+  const declPs = declBlock ? Array.from(declBlock.querySelectorAll('p')) : [];
+  const headerSection = document.getElementById('pdfHeaderSection');
+  const headerMetaTds = headerSection ? Array.from(headerSection.querySelectorAll('table:nth-of-type(2) td')) : [];
+  const narrativeBlock = document.getElementById('pdfNarrativeRefBlock');
+  const narrativePs = narrativeBlock ? Array.from(narrativeBlock.querySelectorAll('p')) : [];
+  const versionFooter = document.getElementById('pdfPage1Version');
+
+  // Baseline Reset: clear previously applied inline styles before measuring
+  page1.style.width = '190mm';
+  page1.style.padding = '0 3.5mm 0 1.5mm';
+  page1.style.boxSizing = 'border-box';
+
+  if (travelTable) {
+    travelTable.style.marginTop = '4px';
+    travelTable.style.marginBottom = '32px';
+    travelTable.style.fontSize = '16px';
   }
+  travelThs.forEach(th => {
+    th.style.padding = '2.5px 3px';
+    th.style.fontSize = '16px';
+    th.style.lineHeight = 'normal';
+  });
+  travelTds.forEach(td => {
+    td.style.padding = '2.5px 3px';
+    td.style.fontSize = '16px';
+    td.style.lineHeight = 'normal';
+  });
+
+  if (approvalTable) {
+    approvalTable.style.marginTop = '4px';
+  }
+  approvalTds.forEach(td => {
+    td.style.height = '72px';
+    td.style.padding = '4px 6px';
+    td.style.fontSize = '13px';
+  });
+
+  if (declBlock) {
+    declBlock.style.marginTop = '0px';
+  }
+  declPs.forEach((p, idx) => {
+    p.style.fontSize = '16px';
+    p.style.lineHeight = '1.45';
+    p.style.margin = idx === 2 ? '4px 0 2px 0' : '2px 0';
+  });
+
+  headerMetaTds.forEach((td, idx) => {
+    const col = idx % 4;
+    td.style.padding = (col === 2) ? '2px 0 2px 8px' : (col === 1 ? '2px 4px 2px 0' : '2px 0');
+    td.style.fontSize = '16px';
+  });
+
+  if (narrativeBlock) {
+    narrativeBlock.style.marginTop = '2px';
+  }
+  narrativePs.forEach((p, idx) => {
+    p.style.fontSize = '16px';
+    p.style.lineHeight = idx === 3 ? '1.45' : 'normal';
+    p.style.margin = idx === 3 ? '4px 2px 4px 12px' : '1px 0';
+  });
+
+  if (versionFooter) {
+    versionFooter.style.display = 'none';
+  }
+
+  function measureHeight() {
+    return Math.ceil(Math.max(page1.getBoundingClientRect().height, page1.scrollHeight, page1.offsetHeight));
+  }
+
+  let currentH = measureHeight();
+  if (currentH <= MAX_PAGE_HEIGHT) {
+    return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'none' };
+  }
+
+  // Priority 1: Remove unnecessary margins and blank gaps
+  const marginSteps = ['22px', '14px', '8px', '4px'];
+  for (const mb of marginSteps) {
+    if (travelTable) travelTable.style.marginBottom = mb;
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'margin-reduced' };
+    }
+  }
+
+  // Priority 2: Reduce travel table cell padding
+  const padSteps = ['2px 2.5px', '1.5px 2px', '1px 2px'];
+  for (const pad of padSteps) {
+    travelThs.forEach(th => th.style.padding = pad);
+    travelTds.forEach(td => td.style.padding = pad);
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'padding-reduced' };
+    }
+  }
+
+  // Priority 3: Use compact, readable table typography
+  const fontSteps = ['15px', '14.5px', '14px', '13.5px', '13px', '12.5px'];
+  for (const fs of fontSteps) {
+    if (travelTable) travelTable.style.fontSize = fs;
+    travelThs.forEach(th => th.style.fontSize = fs);
+    travelTds.forEach(td => td.style.fontSize = fs);
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'table-font-reduced' };
+    }
+  }
+
+  // Priority 4: Reduce unnecessary header and declaration spacing
+  const declFontSteps = ['15px', '14px', '13.5px'];
+  for (const dfs of declFontSteps) {
+    headerMetaTds.forEach((td, idx) => {
+      const col = idx % 4;
+      td.style.fontSize = dfs;
+      td.style.padding = (col === 2) ? '1px 0 1px 6px' : (col === 1 ? '1px 3px 1px 0' : '1px 0');
+    });
+    narrativePs.forEach((p, idx) => {
+      p.style.fontSize = dfs;
+      p.style.lineHeight = idx === 3 ? '1.3' : 'normal';
+      p.style.margin = idx === 3 ? '2px 2px 2px 8px' : '1px 0';
+    });
+    declPs.forEach(p => {
+      p.style.fontSize = dfs;
+      p.style.lineHeight = '1.3';
+      p.style.margin = '1px 0';
+    });
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'header-decl-compact' };
+    }
+  }
+
+  // Priority 5: Adjust flexible section spacing while preserving original hierarchy
+  if (travelTable) {
+    travelTable.style.marginTop = '2px';
+    travelTable.style.marginBottom = '2px';
+  }
+  if (approvalTable) approvalTable.style.marginTop = '2px';
+  if (versionFooter) versionFooter.style.display = 'none';
+  if (narrativeBlock) narrativeBlock.style.marginTop = '0px';
+
+  currentH = measureHeight();
+  if (currentH <= MAX_PAGE_HEIGHT) {
+    return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'flexible-spacing-compact' };
+  }
+
+  // Priority 6: Extreme fallback (only when heavily overflowing, e.g. 15+ multi-line rows)
+  // Approval cells baseline is 72px; strict minimum signing space is 50px (never below 50px!)
+  const approvalHeightSteps = [66, 60, 56, 52, 50];
+  for (const ah of approvalHeightSteps) {
+    approvalTds.forEach(td => td.style.height = ah + 'px');
+    travelThs.forEach(th => { th.style.padding = '1px 1.5px'; th.style.fontSize = '12px'; });
+    travelTds.forEach(td => { td.style.padding = '1px 1.5px'; td.style.fontSize = '12px'; });
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'proportional-scaling-min50' };
+    }
+  }
+
+  return {
+    isValid: currentH <= 1045,
+    pageHeight: currentH,
+    maxHeight: MAX_PAGE_HEIGHT,
+    adjustments: 'extreme'
+  };
 }
 
 /* ---------- Sample loader ---------- */
@@ -466,6 +735,10 @@ function loadSample() {
     if (el) el.value = map[id];
   });
 
+  // Reset header KMS to 8
+  const headerKmsInput = document.getElementById('headerKmsInput');
+  if (headerKmsInput) headerKmsInput.value = '8';
+
   // Reset and populate travel rows
   const tbody = document.getElementById('travelTableBody');
   if (tbody) {
@@ -493,11 +766,11 @@ function loadSample() {
 /* ---------- Validation & submit ---------- */
 
 function validate() {
-  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || '').trim();
-  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || '').trim();
-  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || '').trim();
-  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || '').trim();
-  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || '').trim();
+  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || document.getElementById('tableTrainer')?.placeholder || '').trim();
+  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || document.getElementById('tableEmpIdVal')?.placeholder || '').trim();
+  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || document.getElementById('tableCollege')?.placeholder || '').trim();
+  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || document.getElementById('tableCourse')?.placeholder || '').trim();
+  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || document.getElementById('tableDistrict')?.placeholder || '').trim();
   const travelDate = document.getElementById('tableTravel')?.value || document.getElementById('travelDate')?.value || '';
   const amount = Number(document.getElementById('amount')?.value) || 0;
 
@@ -521,13 +794,13 @@ function validate() {
 
 /* ---------- PDF Generation ---------- */
 
-async function generatePDF() {
-  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || '').trim() || 'Trainer';
-  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || '').trim() || '5800';
+async function generatePDF(options = {}) {
+  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || '').trim() || document.getElementById('tableTrainer')?.placeholder || 'Ashok Kumar Naik Guguloth';
+  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || '').trim() || document.getElementById('tableEmpIdVal')?.placeholder || '6374';
   const noteNum = (document.getElementById('tableNoteFileNum')?.value || '1').trim();
-  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || '').trim() || 'College';
-  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || '').trim() || 'Course';
-  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || '').trim() || 'District';
+  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || '').trim() || document.getElementById('tableCollege')?.placeholder || 'RC Khammam';
+  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || '').trim() || document.getElementById('tableCourse')?.placeholder || 'FrontEnd';
+  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || '').trim() || document.getElementById('tableDistrict')?.placeholder || 'Khammam';
   const amount = Number(document.getElementById('amount')?.value) || 0;
   const noteNo = claimRefFor(empId, noteNum);
   const dtVal = document.getElementById('tableDt')?.value || document.getElementById('dt')?.value || '';
@@ -536,8 +809,8 @@ async function generatePDF() {
   const travelDate = fmtDate(travelDateVal) || '01.09.2026';
   const regRef = (document.getElementById('regRef')?.value || '').trim() || 'Training Calendar.';
   const amountWords = numberToWords(amount);
-  const designation = (document.getElementById('tableDesignation')?.value || document.getElementById('designation')?.value || '').trim() || 'Trainer';
-  const department = (document.getElementById('tableDept')?.value || document.getElementById('department')?.value || '').trim() || 'SEAP';
+  const designation = (document.getElementById('tableDesignation')?.value || document.getElementById('designation')?.value || '').trim() || document.getElementById('tableDesignation')?.placeholder || 'Technical Trainer';
+  const department = (document.getElementById('tableDept')?.value || document.getElementById('department')?.value || '').trim() || document.getElementById('tableDept')?.placeholder || 'SEAP';
 
   // Update PDF placeholders
   const setTxt = (id, txt) => {
@@ -568,55 +841,120 @@ async function generatePDF() {
   setTxt('pdfWords', amount > 0 ? 'Rupees ' + amountWords + ' Only' : 'Zero');
   setTxt('pdfRegRef', regRef);
 
-  // Sync travel breakdown rows into PDF
+  // Wait for web fonts if available
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
+  // 1. Sync travel breakdown rows into PDF
   syncPdfTravelTable();
 
-  // Sync all uploaded images into PDF Page 2
+  // 2. Sync all uploaded images into PDF Page 2
   syncPdfImages();
   await waitForPdfImages();
 
-  const element = document.getElementById('pdfTemplate');
-  if (!element) {
-    alert('PDF template element not found.');
+  // 3. Dynamically fit Page 1 layout
+  const fitResult = fitPdfToSinglePage();
+
+  const page1 = document.getElementById('pdfPage1');
+  const page2 = document.getElementById('pdfPage2');
+  if (!page1 || !page2) {
+    alert('PDF template elements not found.');
     return;
   }
 
   const cleanFilename = 'Reimbursement_' + noteNo.replace(/[\/\\?%*:|"<>]/g, '-') + '.pdf';
   const opt = {
-    margin: [10, 10, 10, 10],
+    margin: [8, 10, 8, 10],
     filename: cleanFilename,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
       scale: 2,
       useCORS: true,
-      letterRendering: true,
+      letterRendering: false,
       scrollY: 0,
       scrollX: 0
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: 'legacy' }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
-  if (typeof html2pdf !== 'undefined') {
-    html2pdf().set(opt).from(element).save().catch(function(err) {
-      console.error('PDF error:', err);
-      alert('PDF download could not be completed via html2pdf. Opening print dialog...');
-      window.print();
-    });
-  } else {
+  if (typeof html2pdf === 'undefined') {
     alert('PDF library not loaded. Opening print dialog...');
+    window.print();
+    return;
+  }
+
+  try {
+    // Ensure DOM footer is hidden during html2canvas capture so it never paints at moving positions
+    const domFooter = document.getElementById('pdfPage1Version');
+    if (domFooter) domFooter.style.display = 'none';
+
+    // Render Page 1 to jsPDF
+    const w1 = html2pdf().set(opt).from(page1);
+    await w1.toPdf();
+    const pdf = await w1.get('pdf');
+
+    // Guarantee Page 1 is strictly 1 page
+    while (pdf.internal.getNumberOfPages() > 1) {
+      pdf.deletePage(pdf.internal.getNumberOfPages());
+    }
+
+    // Draw fixed footer on Page 1 at exact coordinates (independent of travel rows or content height)
+    pdf.setPage(1);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(51, 51, 51);
+    // Exact fixed coordinates: X = 198.5 mm (right aligned with 11.5mm right margin), Y = 288.5 mm (8.5mm bottom margin)
+    pdf.text('Version March 2025', 198.5, 288.5, { align: 'right' });
+
+    // Render Page 2 to canvas
+    const w2 = html2pdf().set(opt).from(page2);
+    await w2.toCanvas();
+    const canvas2 = await w2.get('canvas');
+
+    // Add Page 2
+    pdf.addPage();
+    const imgWidth = 190;
+    const imgHeight = (canvas2.height * imgWidth) / canvas2.width;
+    pdf.addImage(canvas2, 'JPEG', 10, 8, imgWidth, Math.min(281, imgHeight));
+
+    // Guarantee total page count is strictly 2
+    while (pdf.internal.getNumberOfPages() > 2) {
+      pdf.deletePage(pdf.internal.getNumberOfPages());
+    }
+
+    const pageCount = pdf.internal.getNumberOfPages();
+
+    const resultObj = {
+      success: true,
+      pdf: pdf,
+      pageCount: pageCount,
+      fitResult: fitResult,
+      toPdf: () => ({
+        get: async (key) => (key === 'pdf' ? pdf : resultObj)
+      })
+    };
+
+    if (!options || options.save !== false) {
+      pdf.save(cleanFilename);
+    }
+
+    return resultObj;
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('PDF download could not be completed via html2pdf. Opening print dialog...');
     window.print();
   }
 }
 
 function submit() {
   if (!validate()) return;
-  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || '').trim();
-  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || '').trim();
+  const trainerName = (document.getElementById('tableTrainer')?.value || document.getElementById('trainerName')?.value || document.getElementById('tableTrainer')?.placeholder || '').trim();
+  const empId = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('empId')?.value || document.getElementById('tableEmpIdVal')?.placeholder || '').trim();
   const noteNum = (document.getElementById('tableNoteFileNum')?.value || '1').trim();
-  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || '').trim();
-  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || '').trim();
-  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || '').trim();
+  const college = (document.getElementById('tableCollege')?.value || document.getElementById('college')?.value || document.getElementById('tableCollege')?.placeholder || '').trim();
+  const course = (document.getElementById('tableCourse')?.value || document.getElementById('course')?.value || document.getElementById('tableCourse')?.placeholder || '').trim();
+  const district = (document.getElementById('tableDistrict')?.value || document.getElementById('district')?.value || document.getElementById('tableDistrict')?.placeholder || '').trim();
   const amount = Number(document.getElementById('amount')?.value) || 0;
   const amountFormatted = 'Rs. (' + indianFormat(amount) + '/-)';
 
@@ -684,7 +1022,8 @@ function onEmpIdChange(val) {
 
   const yr = (document.getElementById('tableYear')?.value || '2026').trim();
   const mo = (document.getElementById('tableMonth')?.value || 'Sep').trim();
-  const newNote = 'TASK/SEAP/' + yr + '/' + mo + '/' + (clean || '5800');
+  const empVal = clean || document.getElementById('tableEmpIdVal')?.placeholder || '6374';
+  const newNote = 'TASK/SEAP/' + yr + '/' + mo + '/' + empVal;
   const tableNote = document.getElementById('tableNoteNo');
   if (tableNote) tableNote.value = newNote;
   const hiddenNote = document.getElementById('noteFileNo');
@@ -697,10 +1036,10 @@ function onEmpIdChange(val) {
 const tableYear = document.getElementById('tableYear');
 const tableMonth = document.getElementById('tableMonth');
 function onYearMonthChange() {
-  const cleanEmp = (document.getElementById('tableEmpIdVal')?.value || '6374').trim();
+  const cleanEmp = (document.getElementById('tableEmpIdVal')?.value || document.getElementById('tableEmpIdVal')?.placeholder || '6374').trim();
   const yr = (tableYear?.value || '2026').trim();
   const mo = (tableMonth?.value || 'Sep').trim();
-  const newNote = 'TASK/SEAP/' + yr + '/' + mo + '/' + (cleanEmp || '5800');
+  const newNote = 'TASK/SEAP/' + yr + '/' + mo + '/' + cleanEmp;
   const tableNote = document.getElementById('tableNoteNo');
   if (tableNote) tableNote.value = newNote;
   const hiddenNote = document.getElementById('noteFileNo');
@@ -771,6 +1110,13 @@ if (loadSampleBtn) loadSampleBtn.addEventListener('click', loadSample);
 
 const addTravelRowBtn = document.getElementById('addTravelRowBtn');
 if (addTravelRowBtn) addTravelRowBtn.addEventListener('click', () => addTravelRow());
+
+// Table header KMS auto-calculator listener
+const headerKmsInput = document.getElementById('headerKmsInput');
+if (headerKmsInput) {
+  headerKmsInput.addEventListener('input', applyHeaderKmsToAllRows);
+  headerKmsInput.addEventListener('change', applyHeaderKmsToAllRows);
+}
 
 const closeModalBtn = document.getElementById('closeModalBtn');
 const successModal = document.getElementById('successModal');
@@ -1019,6 +1365,7 @@ window.clearImage = clearImage;
 window.syncPdfImages = syncPdfImages;
 window.initSampleImages = initSampleImages;
 window.generatePDF = generatePDF;
+window.fitPdfToSinglePage = fitPdfToSinglePage;
 
 setupImageUploadListeners();
 
@@ -1026,7 +1373,9 @@ setupImageUploadListeners();
 initSampleImages();
 
 // Initial render
+updateTravelRowNumbers();
 updateSummary();
 updateNarrative();
 updateTravelGrandTotal();
+syncPdfTravelTable();
 renderHistory();
