@@ -7,28 +7,51 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="logo">T</div>
-      <div class="header-text">
-        <h1>Reimbursement With-in City</h1>
-        <p>TASK / SEAP &middot; Training &amp; Travel Expenditure Claims Portal</p>
+  <!-- ============ FIXED / STICKY HEADER & REIMBURSEMENT TOGGLE WRAPPER ============ -->
+  <div class="app-sticky-header" id="appStickyHeader">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo">T</div>
+        <div class="header-text">
+          <h1 id="headerMainTitle">Reimbursement With-in City</h1>
+          <p id="headerSubtitle">TASK / SEAP &middot; Training &amp; Travel Expenditure Claims Portal</p>
+        </div>
+        <span class="header-tag">● Internal Use Only</span>
       </div>
-      <span class="header-tag">● Internal Use Only</span>
+    </header>
+
+    <!-- ============ REIMBURSEMENT TYPE NAVIGATION ============ -->
+    <div class="portal-nav-bar no-print">
+      <div class="nav-segmented-control" role="tablist" aria-label="Reimbursement Type Selector">
+        <button type="button" class="nav-segment-btn active" id="tabWithinCity" role="tab" aria-selected="true" onclick="switchReimbursementType('within-city')">
+          <span class="nav-segment-icon">🏙️</span>
+          <span class="nav-segment-text nav-text-full">Within-City Reimbursement</span>
+          <span class="nav-segment-text nav-text-compact">Within-City</span>
+        </button>
+        <button type="button" class="nav-segment-btn" id="tabOutsideCity" role="tab" aria-selected="false" onclick="switchReimbursementType('outside-city')">
+          <span class="nav-segment-icon">🚆</span>
+          <span class="nav-segment-text nav-text-full">Outside-City Reimbursement</span>
+          <span class="nav-segment-text nav-text-compact">Outside-City</span>
+        </button>
+      </div>
     </div>
-  </header>
+  </div>
 
   <main class="container">
-    <div class="page-head">
-      <div class="page-head-title-row">
-        <h2>Training Reimbursement Claim</h2>
-        <span class="pill pill-approved" style="font-size:12px;font-weight:700;">● Active Session</span>
+    <!-- ================================================================= -->
+    <!-- ============ VIEW 1: WITHIN-CITY REIMBURSEMENT ================== -->
+    <!-- ================================================================= -->
+    <div id="viewWithinCity" class="reimburse-view active-view">
+      <div class="page-head">
+        <div class="page-head-title-row">
+          <h2>Reimbursement Within-City</h2>
+          <span class="pill pill-approved" style="font-size:12px;font-weight:700;">● Active Session</span>
+        </div>
+        <p class="page-head-desc">
+          Note file No: <strong id="noteFileNoDisplay">TASK/SEAP/2026/Sep/6374 / Note file No: 1</strong>
+          &nbsp;&middot;&nbsp; Date of Claim (Dt): <strong id="dtDisplay">26/10/2026</strong>
+        </p>
       </div>
-      <p class="page-head-desc">
-        Note file No: <strong id="noteFileNoDisplay">TASK/SEAP/2026/Sep/6374 / Note file No: 1</strong>
-        &nbsp;&middot;&nbsp; Date of Claim (Dt): <strong id="dtDisplay">26/10/2026</strong>
-      </p>
-    </div>
 
     <div class="layout">
       <!-- ============ CLAIM DETAILS FORM ============ -->
@@ -45,13 +68,13 @@
                 <div class="note-token-bar">
                   <span class="note-prefix">TASK / SEAP</span>
                   <span class="note-slash">/</span>
-                  <input id="tableYear" type="text" value="2026" title="Financial Year" placeholder="2026" class="token-input" />
+                  <input id="tableYear" type="text" title="Financial Year" placeholder="2026" class="token-input" />
                   <span class="note-slash">/</span>
-                  <input id="tableMonth" type="text" value="Sep" title="Claim Month" placeholder="Sep" class="token-input" />
+                  <input id="tableMonth" type="text" title="Claim Month" placeholder="Sep" class="token-input" />
                   <span class="note-slash">/</span>
                   <input id="tableEmpId" type="text" value="" title="Employee ID" placeholder="6374" class="token-input" />
                   <span class="note-slash">/ Note file No:</span>
-                  <input id="tableNoteFileNum" type="text" value="1" placeholder="1" title="Note File Number" class="token-input token-num" />
+                  <input id="tableNoteFileNum" type="text" placeholder="1" title="Note File Number" class="token-input token-num" />
                 </div>
               </th>
               <th style="width:50%;padding:6px 0 6px 10px;">
@@ -168,9 +191,6 @@
           </dl>
 
           <div class="summary-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
-            <button id="downloadPdfBtn" class="btn btn-primary" type="button" style="padding:12px 18px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
-              <span>📥</span> Download Claim PDF
-            </button>
             <button id="loadSampleBtn" class="btn btn-ghost" type="button" style="padding:10px 18px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
               <span>🔄</span> Reset to Sample Data
             </button>
@@ -227,10 +247,10 @@
           <tr>
             <td class="travel-sno">1</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static">₹200</span>
               <input type="hidden" class="travel-food-input" value="200" />
@@ -243,10 +263,10 @@
           <tr>
             <td class="travel-sno">2</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static zero">₹0</span>
               <input type="hidden" class="travel-food-input" value="0" />
@@ -259,10 +279,10 @@
           <tr>
             <td class="travel-sno">3</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static">₹200</span>
               <input type="hidden" class="travel-food-input" value="200" />
@@ -275,10 +295,10 @@
           <tr>
             <td class="travel-sno">4</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static zero">₹0</span>
               <input type="hidden" class="travel-food-input" value="0" />
@@ -291,10 +311,10 @@
           <tr>
             <td class="travel-sno">5</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static">₹200</span>
               <input type="hidden" class="travel-food-input" value="200" />
@@ -307,10 +327,10 @@
           <tr>
             <td class="travel-sno">6</td>
             <td><input type="date" value="2026-10-26" class="travel-input" /></td>
-            <td><input type="text" value="College" class="travel-input" /></td>
-            <td><input type="text" value="Home" class="travel-input" /></td>
-            <td><input type="text" value="8KM * ₹10 = ₹80" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-            <td><input type="text" value="Bike" class="travel-input" /></td>
+            <td><input type="text" placeholder="College" class="travel-input" /></td>
+            <td><input type="text" placeholder="Home" class="travel-input" /></td>
+            <td><input type="text" placeholder="e.g. 8*10" class="travel-input travel-kms-input" /></td>
+            <td><input type="text" placeholder="Bike" class="travel-input" /></td>
             <td>
               <span class="travel-food-static zero">₹0</span>
               <input type="hidden" class="travel-food-input" value="0" />
@@ -473,29 +493,346 @@
 
     <!-- ============ SUBMIT ACTION BUTTON ============ -->
     <div class="submit-action-wrap" style="margin: 25px 0 30px; text-align: center;">
-      <button id="submitBtn" class="btn btn-primary" type="button" style="padding: 15px 36px; font-size: 16px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%); box-shadow: 0 8px 20px -4px rgba(22, 50, 79, 0.35); cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: auto; min-width: 280px;">
-        <span style="font-size: 18px;">✈️</span> Submit for Kind Approval
+      <button id="downloadPdfBtn" class="btn btn-primary" type="button" style="padding:15px 36px;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;width:min(100%,650px);margin:0 auto 14px;">
+        <span>📥</span> Download PDF
       </button>
-      <p style="margin: 8px 0 0; font-size: 12.5px; color: var(--muted);">
-        Submits your claim to local records and prepares the official 2-page print-ready reimbursement document.
-      </p>
     </div>
+    </div>
+    <!-- ============ END VIEW 1: WITHIN-CITY ============ -->
 
-    <!-- ============ RECENT CLAIMS ============ -->
-    <section class="card" id="recentClaimsCard">
-      <div class="card-header-flex" style="margin-bottom:12px;">
-        <h3 class="card-title" style="margin:0;border:none;padding:0;">🕒 Recent Submitted Claims</h3>
-        <span class="pill pill-draft" style="font-size:11px;">Local Archive</span>
+    <!-- ================================================================= -->
+    <!-- ============ VIEW 2: OUTSIDE-CITY REIMBURSEMENT ================= -->
+    <!-- ================================================================= -->
+    <div id="viewOutsideCity" class="reimburse-view" style="display:none;">
+      <div class="page-head">
+        <div class="page-head-title-row">
+          <h2>Reimbursement Outside City</h2>
+        </div>
+        <p class="page-head-desc">
+          Note file No: <strong id="outsideNoteFileNoDisplay">TASK/SEAP/2026/Sep/6374 / Note file No: 1</strong>
+          &nbsp;&middot;&nbsp; Date of Claim (Dt): <strong id="outsideDtDisplay">28/10/2026</strong>
+        </p>
       </div>
-      <ul id="historyList" class="history-list">
-        <li class="history-empty">No claims submitted yet in this session. Click "Submit for Kind Approval" above to record a claim.</li>
-      </ul>
-    </section>
+
+      <div class="layout">
+        <!-- ============ CLAIM DETAILS FORM ============ -->
+        <section class="card" id="outsideClaimDetailsCard">
+          <div class="card-header-flex" style="margin-bottom:14px;">
+            <h3 class="card-title" style="margin:0;border:none;padding:0;">📋 1 &middot; Claim Details &mdash; As Per Note File</h3>
+            <span class="pill pill-draft" style="font-size:11px;">Official Records</span>
+          </div>
+          <div class="doc-table-wrap">
+            <table class="doc-table" id="outsideClaimTable">
+            <tbody>
+              <tr class="meta-header-row">
+                <th style="width:50%;padding:6px 10px 6px 0;">
+                  <div class="note-token-bar">
+                    <span class="note-prefix">TASK / SEAP</span>
+                    <span class="note-slash">/</span>
+                    <input id="outsideTableYear" type="text" title="Financial Year" placeholder="2026" class="token-input" />
+                    <span class="note-slash">/</span>
+                    <input id="outsideTableMonth" type="text" title="Claim Month" placeholder="Sep" class="token-input" />
+                    <span class="note-slash">/</span>
+                    <input id="outsideTableEmpId" type="text" value="" title="Employee ID" placeholder="6374" class="token-input" />
+                    <span class="note-slash">/ Note file No:</span>
+                    <input id="outsideTableNoteFileNum" type="text" placeholder="1" title="Note File Number" class="token-input token-num" />
+                  </div>
+                </th>
+                <th style="width:50%;padding:6px 0 6px 10px;">
+                  <div class="date-token-wrap">
+                    <label for="outsideTableDt" class="cell-label">📅 Date of Claim (Dt)</label>
+                    <input id="outsideTableDt" type="date" value="2026-10-28" class="clean-input" />
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <td style="width:50%;padding:6px 10px 6px 0;">
+                  <label for="outsideTableTrainer" class="cell-label">👤 Name of the Trainer</label>
+                  <input id="outsideTableTrainer" type="text" value="" placeholder="Ashok Kumar Naik Guguloth" class="clean-input" />
+                </td>
+                <td style="width:50%;padding:6px 0 6px 10px;">
+                  <label for="outsideTableEmpIdVal" class="cell-label">🆔 Employee ID</label>
+                  <input id="outsideTableEmpIdVal" type="text" value="" placeholder="6374" class="clean-input" />
+                </td>
+              </tr>
+              <tr>
+                <td style="width:50%;padding:6px 10px 6px 0;">
+                  <label for="outsideTableDesignation" class="cell-label">💼 Designation</label>
+                  <input id="outsideTableDesignation" type="text" value="" placeholder="Technical Trainer" class="clean-input" />
+                </td>
+                <td style="width:50%;padding:6px 0 6px 10px;">
+                  <label for="outsideTableDept" class="cell-label">🏢 Department / Location</label>
+                  <input id="outsideTableDept" type="text" value="" placeholder="SEAP" class="clean-input" />
+                </td>
+              </tr>
+              <tr>
+                <td style="width:50%;padding:6px 10px 6px 0;">
+                  <label for="outsideTableCollege" class="cell-label">🎓 Name of the College(s) / Center</label>
+                  <input id="outsideTableCollege" type="text" value="" placeholder="Govt Degree College, Warangal" class="clean-input" />
+                </td>
+                <td style="width:50%;padding:6px 0 6px 10px;">
+                  <label for="outsideTableCourse" class="cell-label">📖 Course Title</label>
+                  <input id="outsideTableCourse" type="text" value="" placeholder="Full Stack Web Development" class="clean-input" />
+                </td>
+              </tr>
+              <tr>
+                <td style="width:50%;padding:6px 10px 6px 0;">
+                  <label for="outsideTableDistrict" class="cell-label">📍 District</label>
+                  <input id="outsideTableDistrict" type="text" value="" placeholder="Warangal" class="clean-input" />
+                </td>
+                <td style="width:50%;padding:6px 0 6px 10px;">
+                  <label for="outsideTableTravel" class="cell-label">🗓️ Training / Travel Date</label>
+                  <input id="outsideTableTravel" type="date" value="2026-10-28" class="clean-input" />
+                </td>
+              </tr>
+              <tr class="sub-row">
+                <td colspan="2" class="sub-cell">
+                  <div class="sub-memo-box">
+                    <div class="sub-line"><strong>Sub:</strong> Reimbursement of expenditure for an amount of <strong style="color:var(--navy);">Rs. (<span id="outsideTableAmount">0</span>/-)</strong> Reg.</div>
+                    <div class="ref-line"><strong>Ref:</strong> Training Calendar.</div>
+                    <input type="hidden" id="outsideRegRef" value="Training Calendar." />
+                  </div>
+                </td>
+              </tr>
+              <tr class="amount-row-table">
+                <td style="width:50%;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <label for="outsideAmount" class="cell-label" style="margin:0;white-space:nowrap;">💰 Amount (Rs.):</label>
+                    <input id="outsideAmount" type="number" min="0" step="1" placeholder="0" class="clean-input" style="width:140px;display:inline-block;" />
+                  </div>
+                </td>
+                <td style="width:50%;text-align:right;">
+                  <div class="amount-words-pill">
+                    <span style="font-size:11.5px;color:var(--muted);text-transform:uppercase;font-weight:700;">In Words:</span>
+                    <strong id="outsideTableWords" style="color:var(--navy-dark);margin-left:6px;">Zero</strong>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <!-- Hidden fields for Outside-City compatibility -->
+          <input type="hidden" id="outsideTableNoteNo" value="TASK/SEAP/2026/Sep/6374" />
+          <input type="hidden" id="outsideNoteFileNo" value="TASK/SEAP/2026/Sep/6374" />
+          <input type="hidden" id="outsideDt" value="2026-10-28" />
+          <input type="hidden" id="outsideTrainerName" value="" />
+          <input type="hidden" id="outsideEmpId" value="" />
+          <input type="hidden" id="outsideDesignation" value="" />
+          <input type="hidden" id="outsideDepartment" value="" />
+          <input type="hidden" id="outsideCollege" value="" />
+          <input type="hidden" id="outsideCourse" value="" />
+          <input type="hidden" id="outsideDistrict" value="" />
+          <input type="hidden" id="outsideTravelDate" value="2026-10-28" />
+        </section>
+
+        <!-- ============ SIDE SUMMARY ============ -->
+        <aside class="side">
+          <section class="card summary-card" id="outsideSummaryCard">
+            <div class="card-header-flex" style="margin-bottom:12px;border-bottom:none;padding-bottom:0;">
+              <h3 class="card-title" style="margin:0;font-size:16px;">💳 Claim Summary</h3>
+              <span class="pill pill-approved" style="font-size:11px;">● Active</span>
+            </div>
+
+            <!-- Total Amount Callout -->
+            <div class="total-callout-box">
+              <span class="callout-label">Total Reimbursement Amount</span>
+              <div class="callout-value" id="outsideSummaryAmount">Rs. (0/-)</div>
+              <div class="callout-words" id="outsideSummaryWords">&mdash;</div>
+            </div>
+
+            <dl class="summary-list">
+              <div>
+                <dt>Note File Reference</dt>
+                <dd id="outsideClaimRef" style="font-family:monospace;font-size:13.5px;color:var(--navy);">TASK/SEAP/2026/Sep/6374</dd>
+              </div>
+              <div>
+                <dt>Verification Status</dt>
+                <dd><span class="pill pill-draft">Draft (Auto-calculated)</span></dd>
+              </div>
+            </dl>
+
+            <div class="summary-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+              <button id="loadOutsideSampleBtn" class="btn btn-ghost" type="button" style="padding:10px 18px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <span>🔄</span> Reset to Sample Data
+              </button>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- ============ TRAVEL BREAKDOWN TABLE ============ -->
+      <section class="card" id="outsideTravelBreakdownCard">
+        <div class="card-header-flex">
+          <div>
+            <h3 class="card-title" style="margin:0;border:none;padding:0;">🚆 2 &middot; Travel Breakdown &amp; Conveyance Expenses</h3>
+            <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Itemized record of outside-city travel with travel place, training dates, distance, mode, fare, accommodation, and food allowances.</p>
+          </div>
+          <button id="addOutsideTravelRowBtn" type="button" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-weight:700;">
+            <span style="font-size:16px;line-height:1;">+</span> Add Travel Row
+          </button>
+        </div>
+
+        <!-- Smart Calculator Tip Banner -->
+        <div class="calculator-tip-banner" style="background:#fffbeb;border-color:#fde68a;color:#92400e;">
+          <span class="tip-icon">⚡</span>
+          <div>
+            <strong>Outside-City Travel Calculator:</strong> Enter your <strong>Fare</strong>, <strong>Accommodation</strong>, and <strong>Food / Water</strong> expenses. Row totals and the grand reimbursement total are calculated automatically!
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="outside-travel-table">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:5.5%;min-width:45px;">SNO</th>
+                <th colspan="2" style="width:25%;min-width:200px;">Travel Place</th>
+                <th colspan="2" style="width:23.5%;min-width:200px;">Training Date</th>
+                <th rowspan="2" style="width:8%;min-width:75px;">Distance</th>
+                <th rowspan="2" style="width:8%;min-width:85px;">Mode</th>
+                <th rowspan="2" style="width:7%;min-width:75px;">Fare</th>
+                <th rowspan="2" style="width:7.5%;min-width:75px;">Accom.</th>
+                <th rowspan="2" style="width:7.5%;min-width:75px;">Food/Water</th>
+                <th rowspan="2" style="width:8%;min-width:85px;">Total (Rs.)</th>
+                <th rowspan="2" class="no-print" style="width:4%;min-width:40px;">Action</th>
+              </tr>
+              <tr>
+                <th style="width:12.5%;min-width:100px;">From</th>
+                <th style="width:12.5%;min-width:100px;">To</th>
+                <th style="width:11.75%;min-width:100px;">Start Date</th>
+                <th style="width:11.75%;min-width:100px;">End Date</th>
+              </tr>
+            </thead>
+            <tbody id="outsideTravelTableBody">
+            </tbody>
+            <tfoot>
+              <tr class="total-row" style="background:#ffffff;color:#000000;">
+                <td colspan="10" style="background:#ffffff;color:#000000;text-align:left;">
+                  <strong>Total Amount: (<span id="outsideTravelTotalWords">Rupees Zero Only</span>)</strong>
+                </td>
+                <td style="background:#ffffff;color:#000000;text-align:center;">
+                  <strong id="outsideTravelTotalNum" style="color:#000000;">₹0</strong>
+                </td>
+                <td class="no-print" style="background:#ffffff;color:#000000;"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="table-scroll-hint no-print">
+          <span>&larr; Scroll horizontally to view all travel columns &rarr;</span>
+        </div>
+      </section>
+
+      <!-- ============ REIMBURSEMENT NARRATIVE ============ -->
+      <section class="card" id="outsideNarrativeCard">
+        <div class="card-header-flex" style="margin-bottom:12px;">
+          <h3 class="card-title" style="margin:0;border:none;padding:0;">📜 3 &middot; Reimbursement Request Statement</h3>
+          <span class="pill pill-draft" style="background:#e0f2fe;color:#0369a1;">Live Synced</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 12px;">
+          Formal declaration statement automatically rendered on Page 1 of the official reimbursement note file:
+        </p>
+        <div class="narrative">
+          <p style="margin-bottom:14px;text-indent:32px;">As per the reference and subject cited above, a training was scheduled at the below mentioned colleges / Regional Center.</p>
+          <p style="margin-bottom:14px;">In this regard, I, <strong id="outsideNarrativeTrainer" class="token-name">(Trainer Name)</strong>, Emp Id <strong id="outsideNarrativeEmpId" class="token-emp">(Emp Id)</strong> spent an amount of <strong class="token-amount">Rs. <span id="outsideNarrativeAmount">0</span> /-</strong> (<span id="outsideNarrativeWords" class="token-words">Zero</span>).</p>
+          <p style="margin-bottom:0;">Hence, I request you to reimburse the expenditure incurred by me. Submitted for Kind Approval.</p>
+        </div>
+      </section>
+
+      <!-- ============ APPROVAL WORKFLOW ============ -->
+      <section class="card" id="outsideApprovalWorkflowCard" style="display: none;">
+        <h3 class="card-title">Approval Workflow &mdash; Submitted for Kind Approval</h3>
+        <table class="approval-table">
+          <tbody>
+            <tr>
+              <td><div class="approver-box"><span class="approver-title">Initiator</span></div></td>
+              <td><div class="approver-box"><span class="approver-title">Coordinator</span></div></td>
+              <td><div class="approver-box"><span class="approver-title">Supervisor</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="approver-box"><span class="approver-title">Manager Accounts</span></div></td>
+              <td class="cell-null"><div class="approver-box"><span class="approver-title null-text">Null</span></div></td>
+              <td><div class="approver-box"><span class="approver-title">COO / Director HR & A</span></div></td>
+            </tr>
+            <tr>
+              <td class="cell-null"><div class="approver-box"><span class="approver-title null-text">Null</span></div></td>
+              <td><div class="approver-box"><span class="approver-title">Chief Executive Officer</span></div></td>
+              <td class="cell-null"><div class="approver-box"><span class="approver-title null-text">Null</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============ SUPPORTING DOCUMENTS / IMAGES UPLOAD ============ -->
+      <section class="card" id="outsideUploadImagesCard">
+        <div class="card-header-flex">
+          <div>
+            <h3 class="card-title" style="margin:0;border:none;padding:0;">📎 4 &middot; Supporting Documents / Training Proofs (PDF Page 2)</h3>
+            <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">
+              Attach 3 mandatory photo proofs (classroom photo, training portal verification, and tickets / conveyance proofs).
+            </p>
+          </div>
+          <span class="pill pill-draft" style="background:#e0f2fe;color:#0369a1;">Page 2 Attachments</span>
+        </div>
+
+        <div class="image-upload-grid">
+          <!-- Image 1 -->
+          <div class="image-upload-box">
+            <div class="upload-header">
+              <strong>1. Classroom Training Photo</strong>
+              <span class="upload-sub">Photo with students &amp; training banner</span>
+            </div>
+            <div class="image-preview-area" id="outsidePreviewArea1" onclick="document.getElementById('outsideFileInput1').click()" title="Click or drag image to upload" style="cursor: pointer;">
+              <img id="outsideWebImgPreview1" src="" alt="Training Photo Preview" class="img-preview" />
+              <div id="outsideEmptyPlaceholder1" class="empty-placeholder" style="display:none;">
+                <span style="font-size: 28px; display: block; margin-bottom: 6px;">📷</span>
+                <strong>Click or drag photo here</strong>
+                <span style="display:block;font-size:11px;color:#94a3b8;margin-top:2px;">PNG, JPG up to 10MB</span>
+              </div>
+            </div>
+            <div class="upload-controls">
+              <input type="file" id="outsideFileInput1" accept="image/*" style="display:none;" onclick="this.value=null;" onchange="handleOutsideImageSelect(this, 1)" />
+              <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('outsideFileInput1').click()">📁 Choose Image 1</button>
+              <button type="button" class="btn btn-del-row" id="outsideClearBtn1" title="Clear Image 1" onclick="clearOutsideImage(1)">&times;</button>
+            </div>
+          </div>
+
+          <!-- Image 2 -->
+          <div class="image-upload-box">
+            <div class="upload-header">
+              <strong>2. Training Details / Portal Screenshot</strong>
+              <span class="upload-sub">College portal confirmation &amp; student count</span>
+            </div>
+            <div class="image-preview-area" id="outsidePreviewArea2" onclick="document.getElementById('outsideFileInput2').click()" title="Click or drag image to upload" style="cursor: pointer;">
+              <img id="outsideWebImgPreview2" src="" alt="Portal Screenshot Preview" class="img-preview" />
+              <div id="outsideEmptyPlaceholder2" class="empty-placeholder" style="display:none;">
+                <span style="font-size: 28px; display: block; margin-bottom: 6px;">🖼️</span>
+                <strong>Click or drag screenshot here</strong>
+                <span style="display:block;font-size:11px;color:#94a3b8;margin-top:2px;">Portal verification capture</span>
+              </div>
+            </div>
+            <div class="upload-controls">
+              <input type="file" id="outsideFileInput2" accept="image/*" style="display:none;" onclick="this.value=null;" onchange="handleOutsideImageSelect(this, 2)" />
+              <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('outsideFileInput2').click()">📁 Choose Image 2</button>
+              <button type="button" class="btn btn-del-row" id="outsideClearBtn2" title="Clear Image 2" onclick="clearOutsideImage(2)">&times;</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SUBMIT ACTION BUTTON ============ -->
+      <div class="submit-action-wrap" style="margin: 25px 0 30px; text-align: center;">
+        <button id="downloadOutsidePdfBtn" class="btn btn-primary" type="button" style="padding:15px 36px;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;width:min(100%,650px);margin:0 auto 14px;">
+          <span>📥</span> Download PDF
+        </button>
+      </div>
+    </div>
+    <!-- ============ END VIEW 2 ============ -->
+
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      TASK / SEAP &middot; Training Reimbursement With-in City &middot; Note file based claim workflow
+      TASK / SEAP &middot; Training Reimbursement
     </div>
   </footer>
 
@@ -509,7 +846,7 @@
       <p id="modalMsg" class="modal-msg"></p>
       <div class="modal-actions" style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
         <button id="downloadModalPdfBtn" class="btn btn-primary" type="button" style="width:auto;display:inline-flex;align-items:center;gap:6px;">
-          <span>📥</span> Download Claim PDF
+          <span>📥</span> Download PDF
         </button>
         <button id="closeModalBtn" class="btn btn-ghost" type="button" style="width:auto;">Done</button>
       </div>
@@ -524,41 +861,46 @@
           <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
             <tr>
               <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfYear">2026</span> / <span id="pdfMonth">Sep</span> / <span id="pdfEmpId">6374</span> / Note file No: <span id="pdfNoteFileNum">1</span></strong></td>
-              <td style="width:40%;padding:2px 0 2px 12px;font-size:16px;border:none;"><strong>Dt:</strong> <span id="pdfDt">09/09/2026</span></td>
             </tr>
           </table>
 
           <table id="pdfEmpDetailsTable" style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
             <colgroup>
-              <col style="width:26%;">
+              <col style="width:21%;">
+              <col style="width:30.5%;">
+              <col style="width:21.5%;">
               <col style="width:27%;">
-              <col style="width:27%;">
-              <col style="width:20%;">
             </colgroup>
             <tbody>
               <tr>
-                <td style="padding:2px 0;font-size:16px;border:none;white-space:nowrap;"><strong>Name of the Trainer:</strong></td>
-                <td style="padding:2px 4px 2px 0;font-size:16px;border:none;"><span id="pdfTrainer">Ashok Kumar Naik Guguloth</span></td>
-                <td style="padding:2px 0 2px 8px;font-size:16px;border:none;white-space:nowrap;"><strong>Emp Id:</strong></td>
-                <td style="padding:2px 0;font-size:16px;border:none;"><span id="pdfEmpId2">6374</span></td>
+                <td style="padding:2px 0;font-size:15px;border:none;"></td>
+                <td style="padding:2px 0;font-size:15px;border:none;"></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Dt</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfDt">09/09/2026</span></td>
               </tr>
               <tr>
-                <td style="padding:2px 0;font-size:16px;border:none;white-space:nowrap;"><strong>Designation:</strong></td>
-                <td style="padding:2px 4px 2px 0;font-size:16px;border:none;"><span id="pdfDesignation">Technical Trainer</span></td>
-                <td style="padding:2px 0 2px 8px;font-size:16px;border:none;white-space:nowrap;"><strong>Department / Location:</strong></td>
-                <td style="padding:2px 0;font-size:16px;border:none;"><span id="pdfDept">SEAP</span></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the Trainer</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfTrainer">Ashok Kumar Naik Guguloth</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Emp Id</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfEmpId2">6374</span></td>
               </tr>
               <tr>
-                <td style="padding:2px 0;font-size:16px;border:none;white-space:nowrap;"><strong>Name of the College(s):</strong></td>
-                <td style="padding:2px 4px 2px 0;font-size:16px;border:none;"><span id="pdfCollege">RC Khammam</span></td>
-                <td style="padding:2px 0 2px 8px;font-size:16px;border:none;white-space:nowrap;"><strong>Course Title:</strong></td>
-                <td style="padding:2px 0;font-size:16px;border:none;"><span id="pdfCourse">FrontEnd</span></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Designation</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfDesignation">Technical Trainer</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Department / Location</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfDept">SEAP</span></td>
               </tr>
               <tr>
-                <td style="padding:2px 0;font-size:16px;border:none;white-space:nowrap;"><strong>District:</strong></td>
-                <td style="padding:2px 4px 2px 0;font-size:16px;border:none;"><span id="pdfDistrict">Khammam</span></td>
-                <td style="padding:2px 0 2px 8px;font-size:16px;border:none;white-space:nowrap;"><strong>Travel Date:</strong></td>
-                <td style="padding:2px 0;font-size:16px;border:none;"><span id="pdfTravel">01.09.2026</span></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the College(s)</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfCollege">RC Khammam</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Course Title</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfCourse">FrontEnd</span></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>District</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfDistrict">Khammam</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Travel Date</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfTravel">01.09.2026</span></td>
               </tr>
             </tbody>
           </table>
@@ -665,6 +1007,152 @@
             </div>
             <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
               <img id="pdfImg3" src="" alt="Google Maps Route Screenshot" style="max-width: 100%; max-height: 74mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OUTSIDE-CITY PDF TEMPLATE CONTAINER (Hidden from view, accessible to html2pdf) ============ -->
+  <div id="pdfOutsideContainer" style="position:absolute; left:-9999px; top:0; width:190mm; opacity:0; pointer-events:none; z-index:-9999;">
+    <div id="pdfOutsideTemplate" style="width:190mm; background:#ffffff; color:#000000; font-family:'Times New Roman',serif; padding:0; box-sizing:border-box;">
+      <div id="pdfOutsidePage1" style="position:relative; width:190mm; background:#ffffff; color:#000000; font-family:'Times New Roman',serif; padding:0 3.5mm 0 1.5mm; box-sizing:border-box;">
+        <div id="pdfOutsideHeaderSection">
+          <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
+            <tr>
+              <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfOutsideYear">2026</span> / <span id="pdfOutsideMonth">Sep</span> / <span id="pdfOutsideEmpId">6374</span> / Note file No: <span id="pdfOutsideNoteFileNum">1</span></strong></td>
+            </tr>
+          </table>
+
+          <table id="pdfOutsideEmpDetailsTable" style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;margin-left:auto;margin-right:auto;">
+            <colgroup>
+              <col style="width:21%;">
+              <col style="width:30.5%;">
+              <col style="width:21.5%;">
+              <col style="width:27%;">
+            </colgroup>
+            <tbody>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;"></td>
+                <td style="padding:2px 0;font-size:15px;border:none;"></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Dt</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideDt">28/10/2026</span></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the Trainer</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideTrainer">Ashok Kumar Naik Guguloth</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Emp Id</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideEmpId2">6374</span></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Designation</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideDesignation">Technical Trainer</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Department / Location</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideDept">SEAP</span></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the College(s)</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideCollege">Govt Degree College, Warangal</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Course Title</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideCourse">Full Stack Web Development</span></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>District</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideDistrict">Warangal</span></td>
+                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Travel Date</strong></td>
+                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideTravel">20.10.2026</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="pdfOutsideNarrativeRefBlock" style="border:none;padding-top:0px;margin-top:2px;">
+            <p style="font-size:16px;margin:1px 0;"><strong>Sub:</strong> Reimbursement of expenditure for an amount of <strong>Rs. (<span id="pdfOutsideAmount">2,700</span>/-) Reg.</strong></p>
+            <p style="font-size:16px;margin:1px 0;"><strong>Ref:</strong> <span id="pdfOutsideRegRef">Training Calendar.</span></p>
+            <p style="font-size:16px;margin:1px 0;text-align:center;letter-spacing:4px;">*****</p>
+            <p style="font-size:16px;text-align:justify;margin:4px 2px 4px 12px;line-height:1.45;text-indent:48px;">As per the reference and subject cited above, a training was scheduled at the below mentioned colleges / Regional Center.</p>
+          </div>
+        </div>
+
+        <table id="pdfOutsideTravelTable" style="width:100%;border-collapse:collapse;margin-top:4px;margin-bottom:28px;font-size:12.5px;border:1px solid #444;background:#ffffff;margin-left:auto;margin-right:auto;">
+          <thead id="pdfOutsideTravelHead">
+            <tr style="background:transparent;color:#000000;">
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:5.5%;box-sizing:border-box;">SNO</th>
+              <th colspan="2" style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:25%;box-sizing:border-box;">Travel Place</th>
+              <th colspan="2" style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:23.5%;box-sizing:border-box;">Training Date</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:8%;box-sizing:border-box;">Distance</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:8%;box-sizing:border-box;">Mode</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:7%;box-sizing:border-box;">Fare</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:7.5%;box-sizing:border-box;">Accom.</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:7.5%;box-sizing:border-box;">Food/Water</th>
+              <th rowspan="2" style="padding:6px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:12px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:8%;box-sizing:border-box;">Total (Rs.)</th>
+            </tr>
+            <tr style="background:transparent;color:#000000;">
+              <th style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:11.5px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:12.5%;box-sizing:border-box;">From</th>
+              <th style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:11.5px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:12.5%;box-sizing:border-box;">To</th>
+              <th style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:11.5px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:11.75%;box-sizing:border-box;">Start Date</th>
+              <th style="padding:4px 2px;border:1px solid #444;text-align:center;vertical-align:middle;font-size:11.5px;font-weight:bold;line-height:1.2;white-space:normal;overflow-wrap:anywhere;background:#ffffff;width:11.75%;box-sizing:border-box;">End Date</th>
+            </tr>
+          </thead>
+          <tbody id="pdfOutsideTravelBody">
+          </tbody>
+          <tfoot id="pdfOutsideTravelFoot">
+            <tr style="background:transparent;color:#000000;font-weight:bold;">
+              <td colspan="10" style="padding:3px 6px;border:1px solid #444;text-align:left;background:#ffffff;color:#000000;font-size:12px;box-sizing:border-box;">Total Amount: (<span id="pdfOutsideTravelTotalWords">Rupees Two Thousand Seven Hundred Only</span>)</td>
+              <td id="pdfOutsideTravelTotalNum" style="padding:3px 2px;border:1px solid #444;text-align:center;background:#ffffff;color:#000000;font-size:12px;box-sizing:border-box;width:8%;">₹2,700</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div id="pdfOutsideDeclarationBlock" style="margin-top:0px;">
+          <p style="font-size:16px;text-align:justify;margin:2px 0;line-height:1.45;">In this regard, I, (<strong><span id="pdfOutsideTrainer2">Ashok Kumar Naik Guguloth</span></strong>), Emp Id (<strong><span id="pdfOutsideEmpId3">6374</span></strong>) spent an amount of Rs. <strong><span id="pdfOutsideAmount2">2,700</span> /-</strong> (<strong><span id="pdfOutsideWords">Rupees Two Thousand Seven Hundred Only</span></strong>).</p>
+          <p style="font-size:16px;text-align:justify;margin:2px 0;line-height:1.45;">Hence, I request you to reimburse the expenditure incurred by me.</p>
+          <p style="font-size:16px;margin:4px 0 2px 0;">Submitted for Kind Approval.</p>
+        </div>
+
+        <table id="pdfOutsideApprovalTable" style="width:100%;border-collapse:collapse;margin-top:4px;font-family:Arial,sans-serif;font-size:13px;table-layout:fixed;border:none;text-align:center;margin-left:auto;margin-right:auto;">
+          <tr>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Initiator</strong></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Coordinator</strong></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Supervisor</strong></td>
+          </tr>
+          <tr>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Manager Accounts</strong></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>COO / Director HR & A</strong></td>
+          </tr>
+          <tr>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"><strong>Chief Executive Officer</strong></td>
+            <td style="width:33.333%;height:72px;vertical-align:bottom;padding:4px 6px;border:none;text-align:center;font-family:Arial,sans-serif;font-size:13px;"></td>
+          </tr>
+        </table>
+
+        <div id="pdfOutsidePage1Version" style="display:none; text-align:right; font-family:Calibri,Arial,sans-serif; font-size:10pt; color:#333333; margin-top:8px; padding-right:2px;">
+          Version March 2025
+        </div>
+      </div>
+
+      <!-- ============ PAGE 2: SUPPORTING DOCUMENTS ============ -->
+      <div id="pdfOutsidePage2" style="width: 190mm; background:#ffffff; padding: 4px 3.5mm 0 1.5mm; box-sizing: border-box;">
+        <div style="border-bottom: 2px solid #16324f; padding-bottom: 4px; margin-bottom: 8px;">
+          <h4 style="margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #16324f;">Supporting Documents &amp; Route Verification (Outside-City)</h4>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+          <div id="pdfOutsideImgWrapper1" style="width: 100%; text-align: center;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: left; color: #222;">
+              1. Classroom Training Photo:
+            </div>
+            <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
+              <img id="pdfOutsideImg1" src="" alt="Classroom Training Photo" style="max-width: 100%; max-height: 110mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </div>
+          </div>
+          <div id="pdfOutsideImgWrapper2" style="width: 100%; text-align: center;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: left; color: #222;">
+              2. Training Details / Portal Screenshot:
+            </div>
+            <div style="border: 1px solid #777; padding: 2px; background: #fafafa; width: 100%; box-sizing: border-box; text-align: center;">
+              <img id="pdfOutsideImg2" src="" alt="Portal Screenshot" style="max-width: 100%; max-height: 110mm; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
             </div>
           </div>
         </div>

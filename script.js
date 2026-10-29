@@ -26,6 +26,24 @@ const SAMPLE = {
   regRef: 'Training Calendar.',
 };
 
+const SAMPLE_OUTSIDE = {
+  year: '2026',
+  month: 'Sep',
+  noteFileNo: 'TASK/SEAP/2026/Sep/6374',
+  noteFileNum: '1',
+  dt: getTodayIso(),
+  trainerName: 'Ashok Kumar Naik Guguloth',
+  empId: '6374',
+  designation: 'Technical Trainer',
+  department: 'SEAP',
+  college: 'Govt Degree College, Warangal',
+  course: 'Full Stack Web Development',
+  district: 'Warangal',
+  travelDate: getTodayIso(),
+  amount: 2700,
+  regRef: 'Training Calendar.',
+};
+
 /* ---------- Helpers ---------- */
 
 function indianFormat(num) {
@@ -355,20 +373,20 @@ function addTravelRow(data = {}) {
 
   const today = getTodayIso();
   const dt = data.date || today;
-  const from = data.from || (rowIndex % 2 === 0 ? 'Home' : 'College');
-  const to = data.to || (rowIndex % 2 === 0 ? 'College' : 'Home');
+  const from = data.from || '';
+  const to = data.to || '';
   const kms = data.kms || defaultFormula;
-  const mode = data.mode || 'Bike';
+  const mode = data.mode || '';
   const total = data.total !== undefined ? data.total : (Number(food) + parseKmsAllowance(kms));
 
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td class="travel-sno">${rowIndex + 1}</td>
     <td><input type="date" value="${dt}" class="travel-input" /></td>
-    <td><input type="text" value="${from}" class="travel-input" /></td>
-    <td><input type="text" value="${to}" class="travel-input" /></td>
-    <td><input type="text" value="${kms}" class="travel-input travel-kms-input" placeholder="e.g. 35*10" /></td>
-    <td><input type="text" value="${mode}" class="travel-input" /></td>
+    <td><input type="text" value="${from}" placeholder="${rowIndex % 2 === 0 ? 'Home' : 'College'}" class="travel-input" /></td>
+    <td><input type="text" value="${to}" placeholder="${rowIndex % 2 === 0 ? 'College' : 'Home'}" class="travel-input" /></td>
+    <td><input type="text" value="${data.kms || ''}" placeholder="e.g. ${defaultFormula}" class="travel-input travel-kms-input" /></td>
+    <td><input type="text" value="${mode}" placeholder="Bike" class="travel-input" /></td>
     <td>
       <span class="travel-food-static ${Number(food) === 0 ? 'zero' : ''}">₹${food}</span>
       <input type="hidden" class="travel-food-input" value="${food}" />
@@ -506,11 +524,31 @@ function syncPdfTravelTable() {
   const travelTotalWords = document.getElementById('pdfTravelTotalWords');
   if (travelTotalNum) travelTotalNum.textContent = '₹' + indianFormat(grandTotal);
   if (travelTotalWords) {
-    travelTotalWords.textContent = grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Zero';
+    travelTotalWords.textContent = grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Rupees Zero Only';
   }
 
   // Dynamically fit Page 1 layout to single page budget
   fitPdfToSinglePage();
+}
+
+/**
+ * Auto-scales claim details value spans if needed to guarantee
+ * that values fit on a single horizontal line without wrapping or overflow.
+ */
+function fitClaimDetailsValues(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const valueTds = table.querySelectorAll('tbody td:nth-child(2), tbody td:nth-child(4)');
+  valueTds.forEach(td => {
+    const span = td.querySelector('span');
+    if (!span) return;
+    span.style.fontSize = '';
+    let size = 15;
+    while (td.scrollWidth > td.clientWidth + 0.5 && size > 10.5) {
+      size -= 0.5;
+      span.style.fontSize = size + 'px';
+    }
+  });
 }
 
 /**
@@ -533,7 +571,7 @@ function fitPdfToSinglePage() {
   const declBlock = document.getElementById('pdfDeclarationBlock');
   const declPs = declBlock ? Array.from(declBlock.querySelectorAll('p')) : [];
   const headerSection = document.getElementById('pdfHeaderSection');
-  const headerMetaTds = headerSection ? Array.from(headerSection.querySelectorAll('table:nth-of-type(2) td')) : [];
+  const headerMetaTds = headerSection ? Array.from(headerSection.querySelectorAll('#pdfEmpDetailsTable td')) : [];
   const narrativeBlock = document.getElementById('pdfNarrativeRefBlock');
   const narrativePs = narrativeBlock ? Array.from(narrativeBlock.querySelectorAll('p')) : [];
   const versionFooter = document.getElementById('pdfPage1Version');
@@ -560,6 +598,9 @@ function fitPdfToSinglePage() {
   });
 
   if (approvalTable) {
+    approvalTable.style.width = '100%';
+    approvalTable.style.marginLeft = 'auto';
+    approvalTable.style.marginRight = 'auto';
     approvalTable.style.marginTop = '4px';
   }
   approvalTds.forEach(td => {
@@ -579,9 +620,11 @@ function fitPdfToSinglePage() {
 
   headerMetaTds.forEach((td, idx) => {
     const col = idx % 4;
-    td.style.padding = (col === 2) ? '2px 0 2px 8px' : (col === 1 ? '2px 4px 2px 0' : '2px 0');
-    td.style.fontSize = '16px';
+    td.style.padding = (col === 2) ? '2px 0 2px 4px' : '2px 0';
+    td.style.fontSize = '15px';
+    td.style.whiteSpace = 'nowrap';
   });
+  fitClaimDetailsValues('pdfEmpDetailsTable');
 
   if (narrativeBlock) {
     narrativeBlock.style.marginTop = '2px';
@@ -639,12 +682,12 @@ function fitPdfToSinglePage() {
   }
 
   // Priority 4: Reduce unnecessary header and declaration spacing
-  const declFontSteps = ['15px', '14px', '13.5px'];
+  const declFontSteps = ['14.5px', '14px', '13.5px'];
   for (const dfs of declFontSteps) {
     headerMetaTds.forEach((td, idx) => {
       const col = idx % 4;
       td.style.fontSize = dfs;
-      td.style.padding = (col === 2) ? '1px 0 1px 6px' : (col === 1 ? '1px 3px 1px 0' : '1px 0');
+      td.style.padding = (col === 2) ? '1px 0 1px 4px' : '1px 0';
     });
     narrativePs.forEach((p, idx) => {
       p.style.fontSize = dfs;
@@ -756,7 +799,9 @@ function loadSample() {
   }
 
   // Load sample Page 2 images
-  initSampleImages();
+  clearImage(1);
+  clearImage(2);
+  clearImage(3);
 
   updateSummary();
   updateNarrative();
@@ -1103,7 +1148,15 @@ const downloadPdfBtn = document.getElementById('downloadPdfBtn');
 if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', generatePDF);
 
 const downloadModalPdfBtn = document.getElementById('downloadModalPdfBtn');
-if (downloadModalPdfBtn) downloadModalPdfBtn.addEventListener('click', generatePDF);
+if (downloadModalPdfBtn) {
+  downloadModalPdfBtn.addEventListener('click', () => {
+    if (window.currentReimbursementType === 'outside-city') {
+      generateOutsidePDF();
+    } else {
+      generatePDF();
+    }
+  });
+}
 
 const loadSampleBtn = document.getElementById('loadSampleBtn');
 if (loadSampleBtn) loadSampleBtn.addEventListener('click', loadSample);
@@ -1369,8 +1422,8 @@ window.fitPdfToSinglePage = fitPdfToSinglePage;
 
 setupImageUploadListeners();
 
-// Initialize sample images
-initSampleImages();
+// Start with empty proof slots on the Within City form.
+[1, 2, 3].forEach(clearImage);
 
 // Initial render
 updateTravelRowNumbers();
@@ -1379,3 +1432,944 @@ updateNarrative();
 updateTravelGrandTotal();
 syncPdfTravelTable();
 renderHistory();
+
+/* ========================================================================= */
+/* ============ OUTSIDE-CITY REIMBURSEMENT MODULE (PHASE 1 & 2) ============ */
+/* ========================================================================= */
+
+window.currentReimbursementType = 'within-city';
+
+const setTxt = (id, txt) => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = txt;
+};
+
+function switchReimbursementType(type) {
+  const viewWithin = document.getElementById('viewWithinCity');
+  const viewOutside = document.getElementById('viewOutsideCity');
+  const tabWithin = document.getElementById('tabWithinCity');
+  const tabOutside = document.getElementById('tabOutsideCity');
+  const headerTitle = document.getElementById('headerMainTitle');
+
+  if (type === 'outside-city') {
+    if (viewWithin) viewWithin.style.display = 'none';
+    if (viewOutside) viewOutside.style.display = 'block';
+    if (tabWithin) {
+      tabWithin.classList.remove('active');
+      tabWithin.setAttribute('aria-selected', 'false');
+    }
+    if (tabOutside) {
+      tabOutside.classList.add('active');
+      tabOutside.setAttribute('aria-selected', 'true');
+    }
+    if (headerTitle) headerTitle.textContent = 'Reimbursement Outside City';
+    window.currentReimbursementType = 'outside-city';
+    updateStickyHeaderHeight();
+    syncOutsidePdfTravelTable();
+  } else {
+    if (viewOutside) viewOutside.style.display = 'none';
+    if (viewWithin) viewWithin.style.display = 'block';
+    if (tabOutside) {
+      tabOutside.classList.remove('active');
+      tabOutside.setAttribute('aria-selected', 'false');
+    }
+    if (tabWithin) {
+      tabWithin.classList.add('active');
+      tabWithin.setAttribute('aria-selected', 'true');
+    }
+    if (headerTitle) headerTitle.textContent = 'Reimbursement With-in City';
+    window.currentReimbursementType = 'within-city';
+    updateStickyHeaderHeight();
+    syncPdfTravelTable();
+  }
+}
+
+/**
+ * Dynamically computes and updates the sticky header height CSS custom property
+ * so that subordinate sticky elements (like desktop Claim Summary card) align perfectly.
+ */
+function updateStickyHeaderHeight() {
+  const stickyHeader = document.getElementById('appStickyHeader');
+  if (stickyHeader) {
+    const h = stickyHeader.offsetHeight;
+    document.documentElement.style.setProperty('--sticky-header-height', h + 'px');
+  }
+}
+window.addEventListener('resize', updateStickyHeaderHeight);
+window.addEventListener('DOMContentLoaded', updateStickyHeaderHeight);
+window.updateStickyHeaderHeight = updateStickyHeaderHeight;
+
+function updateOutsideTravelRowNumbers() {
+  const tbody = document.getElementById('outsideTravelTableBody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  rows.forEach((tr, index) => {
+    let snoCell = tr.querySelector('.outside-sno');
+    if (!snoCell) {
+      snoCell = document.createElement('td');
+      snoCell.className = 'outside-sno';
+      tr.insertBefore(snoCell, tr.firstChild);
+    }
+    snoCell.textContent = String(index + 1);
+  });
+}
+
+function updateOutsideRowTotal(inputOrRow) {
+  const row = inputOrRow.closest ? inputOrRow.closest('tr') : inputOrRow;
+  if (!row) return;
+
+  const fareInp = row.querySelector('.outside-fare');
+  const accomInp = row.querySelector('.outside-accom');
+  const foodInp = row.querySelector('.outside-food');
+  const totalSpan = row.querySelector('.outside-row-total');
+
+  const fareVal = parseFloat(fareInp ? fareInp.value : 0) || 0;
+  const accomVal = parseFloat(accomInp ? accomInp.value : 0) || 0;
+  const foodVal = parseFloat(foodInp ? foodInp.value : 0) || 0;
+
+  const rowTotal = Math.round(fareVal + accomVal + foodVal);
+  if (totalSpan) totalSpan.textContent = indianFormat(rowTotal);
+
+  updateOutsideGrandTotal();
+}
+
+function updateOutsideGrandTotal() {
+  const rows = document.querySelectorAll('#outsideTravelTableBody tr');
+  let sum = 0;
+  rows.forEach(tr => {
+    const totalSpan = tr.querySelector('.outside-row-total');
+    if (totalSpan) {
+      const raw = totalSpan.textContent.replace(/[^\d]/g, '');
+      sum += Number(raw) || 0;
+    }
+  });
+
+  const footNum = document.getElementById('outsideTravelTotalNum');
+  const footWords = document.getElementById('outsideTravelTotalWords');
+  if (footNum) footNum.textContent = '₹' + indianFormat(sum);
+  if (footWords) {
+    footWords.textContent = sum > 0 ? 'Rupees ' + numberToWords(sum) + ' Only' : 'Rupees Zero Only';
+  }
+
+  const amtInput = document.getElementById('outsideAmount');
+  if (amtInput) amtInput.value = sum;
+
+  updateOutsideSummary();
+  updateOutsideNarrative();
+  syncOutsidePdfTravelTable();
+}
+
+function addOutsideTravelRow(data = {}) {
+  const tbody = document.getElementById('outsideTravelTableBody');
+  if (!tbody) return;
+
+  const rows = tbody.querySelectorAll('tr');
+  const rowIndex = rows.length;
+  const today = getTodayIso();
+
+  const from = data.from || '';
+  const to = data.to || '';
+  const startDate = data.startDate || today;
+  const endDate = data.endDate || today;
+  const distance = data.distance || '';
+  const mode = data.mode || 'Train';
+  const fare = data.fare !== undefined ? data.fare : 350;
+  const accommodation = data.accommodation !== undefined ? data.accommodation : (rowIndex % 2 === 0 ? 1200 : 0);
+  const food = data.food !== undefined ? data.food : (rowIndex % 2 === 0 ? 600 : 200);
+  const total = Math.round((Number(fare) || 0) + (Number(accommodation) || 0) + (Number(food) || 0));
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="outside-sno">${rowIndex + 1}</td>
+    <td><input type="text" value="${from}" class="outside-input outside-from" placeholder="${rowIndex % 2 === 0 ? 'Hyderabad (Secunderabad)' : 'Warangal (Kazipet)'}" /></td>
+    <td><input type="text" value="${to}" class="outside-input outside-to" placeholder="${rowIndex % 2 === 0 ? 'Warangal (Kazipet)' : 'Hyderabad (Secunderabad)'}" /></td>
+    <td><input type="date" value="${startDate}" class="outside-input outside-start-date" /></td>
+    <td><input type="date" value="${endDate}" class="outside-input outside-end-date" /></td>
+    <td><input type="text" value="${distance}" class="outside-input outside-distance" placeholder="e.g. 150 KM" /></td>
+    <td>
+      <select class="outside-input outside-select outside-mode">
+        <option value="Train"${mode === 'Train' ? ' selected' : ''}>Train</option>
+        <option value="Bus"${mode === 'Bus' ? ' selected' : ''}>Bus</option>
+        <option value="Car / Cab"${mode === 'Car / Cab' ? ' selected' : ''}>Car / Cab</option>
+        <option value="Bike"${mode === 'Bike' ? ' selected' : ''}>Bike</option>
+        <option value="Auto"${mode === 'Auto' ? ' selected' : ''}>Auto</option>
+        <option value="Flight"${mode === 'Flight' ? ' selected' : ''}>Flight</option>
+        <option value="Other"${mode === 'Other' ? ' selected' : ''}>Other</option>
+      </select>
+    </td>
+    <td><input type="number" min="0" step="any" value="${fare}" class="outside-input outside-fare" placeholder="0" /></td>
+    <td><input type="number" min="0" step="any" value="${accommodation}" class="outside-input outside-accom" placeholder="0" /></td>
+    <td><input type="number" min="0" step="any" value="${food}" class="outside-input outside-food" placeholder="0" /></td>
+    <td><span style="font-weight:700;">₹</span><span class="outside-row-total">${indianFormat(total)}</span></td>
+    <td class="no-print">
+      <button type="button" class="btn-del-row" title="Delete Row" onclick="deleteOutsideTravelRow(this)">&times;</button>
+    </td>
+  `;
+
+  attachOutsideTravelRowListeners(tr);
+  tbody.appendChild(tr);
+  updateOutsideTravelRowNumbers();
+  updateOutsideGrandTotal();
+}
+
+function attachOutsideTravelRowListeners(tr) {
+  const expenseInputs = tr.querySelectorAll('.outside-fare, .outside-accom, .outside-food');
+  expenseInputs.forEach(inp => {
+    inp.addEventListener('input', () => updateOutsideRowTotal(inp));
+    inp.addEventListener('change', () => updateOutsideRowTotal(inp));
+  });
+
+  const otherInputs = tr.querySelectorAll('input, select');
+  otherInputs.forEach(inp => {
+    if (!inp.classList.contains('outside-fare') && !inp.classList.contains('outside-accom') && !inp.classList.contains('outside-food')) {
+      inp.addEventListener('change', () => syncOutsidePdfTravelTable());
+      inp.addEventListener('input', () => syncOutsidePdfTravelTable());
+    }
+  });
+}
+
+function deleteOutsideTravelRow(btn) {
+  const row = btn.closest('tr');
+  if (!row) return;
+  const tbody = row.closest('tbody');
+  if (tbody && tbody.querySelectorAll('tr').length <= 1) {
+    alert('At least one travel row is required in the outside-city claim breakdown.');
+    return;
+  }
+  row.remove();
+  updateOutsideTravelRowNumbers();
+  updateOutsideGrandTotal();
+}
+
+function updateOutsideSummary() {
+  const amtInput = document.getElementById('outsideAmount');
+  const val = parseInt(amtInput ? amtInput.value : 0) || 0;
+  const words = val > 0 ? 'Rupees ' + numberToWords(val) + ' Only' : 'Zero';
+
+  const sumAmt = document.getElementById('outsideSummaryAmount');
+  const sumWrd = document.getElementById('outsideSummaryWords');
+  const tblAmt = document.getElementById('outsideTableAmount');
+  const tblWrd = document.getElementById('outsideTableWords');
+
+  if (sumAmt) sumAmt.textContent = 'Rs. (' + indianFormat(val) + '/-)';
+  if (sumWrd) sumWrd.textContent = words;
+  if (tblAmt) tblAmt.textContent = indianFormat(val);
+  if (tblWrd) tblWrd.textContent = words;
+
+  const empId = (document.getElementById('outsideTableEmpIdVal')?.value || document.getElementById('outsideTableEmpId')?.placeholder || '6374').trim();
+  const noteNum = (document.getElementById('outsideTableNoteFileNum')?.value || '1').trim();
+  const yr = (document.getElementById('outsideTableYear')?.value || '2026').trim();
+  const mo = (document.getElementById('outsideTableMonth')?.value || 'Sep').trim();
+  const ref = `TASK/SEAP/${yr}/${mo}/${empId} / Note file No: ${noteNum}`;
+
+  const claimRefEl = document.getElementById('outsideClaimRef');
+  if (claimRefEl) claimRefEl.textContent = ref;
+  const dispNote = document.getElementById('outsideNoteFileNoDisplay');
+  if (dispNote) dispNote.textContent = ref;
+  const dispDt = document.getElementById('outsideDtDisplay');
+  const dtVal = document.getElementById('outsideTableDt')?.value || getTodayIso();
+  if (dispDt) dispDt.textContent = fmtDate(dtVal);
+}
+
+function updateOutsideNarrative() {
+  const trainer = (document.getElementById('outsideTableTrainer')?.value || document.getElementById('outsideTableTrainer')?.placeholder || '').trim();
+  const empId = (document.getElementById('outsideTableEmpIdVal')?.value || document.getElementById('outsideTableEmpIdVal')?.placeholder || '').trim();
+  const amt = parseInt(document.getElementById('outsideAmount')?.value || 0) || 0;
+
+  const nTrainer = document.getElementById('outsideNarrativeTrainer');
+  const nEmpId = document.getElementById('outsideNarrativeEmpId');
+  const nAmt = document.getElementById('outsideNarrativeAmount');
+  const nWords = document.getElementById('outsideNarrativeWords');
+
+  if (nTrainer) nTrainer.textContent = trainer ? trainer : '(Trainer Name)';
+  if (nEmpId) nEmpId.textContent = empId ? empId : '(Emp Id)';
+  if (nAmt) nAmt.textContent = indianFormat(amt);
+  if (nWords) nWords.textContent = amt > 0 ? 'Rupees ' + numberToWords(amt) + ' Only' : 'Zero';
+}
+
+function loadOutsideSample() {
+  const today = getTodayIso();
+  SAMPLE_OUTSIDE.dt = today;
+  SAMPLE_OUTSIDE.travelDate = today;
+
+  const map = {
+    outsideTableYear: SAMPLE_OUTSIDE.year || '2026',
+    outsideTableMonth: SAMPLE_OUTSIDE.month || 'Sep',
+    outsideTableEmpId: SAMPLE_OUTSIDE.empId,
+    outsideTableEmpIdVal: SAMPLE_OUTSIDE.empId,
+    outsideTableNoteFileNum: SAMPLE_OUTSIDE.noteFileNum || '1',
+    outsideTableNoteNo: SAMPLE_OUTSIDE.noteFileNo,
+    outsideTableDt: SAMPLE_OUTSIDE.dt,
+    outsideTableTrainer: SAMPLE_OUTSIDE.trainerName,
+    outsideTableDesignation: SAMPLE_OUTSIDE.designation,
+    outsideTableDept: SAMPLE_OUTSIDE.department,
+    outsideTableCollege: SAMPLE_OUTSIDE.college,
+    outsideTableCourse: SAMPLE_OUTSIDE.course,
+    outsideTableDistrict: SAMPLE_OUTSIDE.district,
+    outsideTableTravel: SAMPLE_OUTSIDE.travelDate,
+  };
+
+  Object.keys(map).forEach(id => {
+    const el = document.getElementById(id);
+    if (el && map[id] !== undefined) el.value = map[id];
+  });
+
+  const tbody = document.getElementById('outsideTravelTableBody');
+  if (tbody) {
+    tbody.innerHTML = '';
+    const sampleRows = [
+      {
+        from: 'Hyderabad (Secunderabad)',
+        to: 'Warangal (Kazipet)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 1200,
+        food: 600
+      },
+      {
+        from: 'Warangal (Kazipet)',
+        to: 'Hyderabad (Secunderabad)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      },
+      {
+        from: 'Hyderabad (Secunderabad)',
+        to: 'Warangal (Kazipet)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      },
+      {
+        from: 'Warangal (Kazipet)',
+        to: 'Hyderabad (Secunderabad)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      },
+      {
+        from: 'Hyderabad (Secunderabad)',
+        to: 'Warangal (Kazipet)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      },
+      {
+        from: 'Warangal (Kazipet)',
+        to: 'Hyderabad (Secunderabad)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      },
+      {
+        from: 'Hyderabad (Secunderabad)',
+        to: 'Warangal (Kazipet)',
+        startDate: today,
+        endDate: today,
+        distance: '150 KM',
+        mode: 'Train',
+        fare: 350,
+        accommodation: 0,
+        food: 200
+      }
+    ];
+    sampleRows.forEach(r => addOutsideTravelRow(r));
+  }
+
+  initOutsideSampleImages();
+  updateOutsideSummary();
+  updateOutsideNarrative();
+  updateOutsideGrandTotal();
+}
+
+function syncOutsidePdfTravelTable() {
+  const srcRows = document.querySelectorAll('#outsideTravelTableBody tr');
+  const targetBody = document.getElementById('pdfOutsideTravelBody');
+  if (!targetBody) return;
+  targetBody.innerHTML = '';
+
+  let grandTotal = 0;
+  srcRows.forEach((row, index) => {
+    const sno = index + 1;
+    const from = row.querySelector('.outside-from')?.value || '';
+    const to = row.querySelector('.outside-to')?.value || '';
+    const startDate = fmtDate(row.querySelector('.outside-start-date')?.value || '') || fmtDate(getTodayIso());
+    const endDate = fmtDate(row.querySelector('.outside-end-date')?.value || '') || fmtDate(getTodayIso());
+    const distance = row.querySelector('.outside-distance')?.value || '';
+    const mode = row.querySelector('.outside-mode')?.value || 'Train';
+    const fare = row.querySelector('.outside-fare')?.value || '0';
+    const accom = row.querySelector('.outside-accom')?.value || '0';
+    const food = row.querySelector('.outside-food')?.value || '0';
+    const totalSpan = row.querySelector('.outside-row-total');
+    const total = totalSpan ? totalSpan.textContent.replace(/[^\d]/g, '').trim() : (parseInt(fare) + parseInt(accom) + parseInt(food));
+    grandTotal += Number(total) || 0;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:5.5%;box-sizing:border-box;">${sno}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:12.5%;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;">${from}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:12.5%;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;">${to}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:11.75%;box-sizing:border-box;">${startDate}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:11.75%;box-sizing:border-box;">${endDate}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:8%;box-sizing:border-box;">${distance}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:8%;box-sizing:border-box;">${mode}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:7%;box-sizing:border-box;">₹${indianFormat(fare)}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:7.5%;box-sizing:border-box;">₹${indianFormat(accom)}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:7.5%;box-sizing:border-box;">₹${indianFormat(food)}</td>
+      <td style="padding:2.5px 2px;border:1px solid #444;text-align:center;font-size:12px;width:8%;box-sizing:border-box;">₹${indianFormat(total)}</td>
+    `;
+    targetBody.appendChild(tr);
+  });
+
+  const travelTotalNum = document.getElementById('pdfOutsideTravelTotalNum');
+  const travelTotalWords = document.getElementById('pdfOutsideTravelTotalWords');
+  if (travelTotalNum) travelTotalNum.textContent = '₹' + indianFormat(grandTotal);
+  if (travelTotalWords) {
+    travelTotalWords.textContent = grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Rupees Zero Only';
+  }
+
+  // Also sync PDF metadata fields
+  const trainer = document.getElementById('outsideTableTrainer')?.value || document.getElementById('outsideTableTrainer')?.placeholder || '';
+  const empId = document.getElementById('outsideTableEmpIdVal')?.value || document.getElementById('outsideTableEmpIdVal')?.placeholder || '';
+  const yr = document.getElementById('outsideTableYear')?.value || '2026';
+  const mo = document.getElementById('outsideTableMonth')?.value || 'Sep';
+  const noteNum = document.getElementById('outsideTableNoteFileNum')?.value || '1';
+  const dtVal = document.getElementById('outsideTableDt')?.value || getTodayIso();
+  const designation = document.getElementById('outsideTableDesignation')?.value || document.getElementById('outsideTableDesignation')?.placeholder || '';
+  const dept = document.getElementById('outsideTableDept')?.value || document.getElementById('outsideTableDept')?.placeholder || '';
+  const college = document.getElementById('outsideTableCollege')?.value || document.getElementById('outsideTableCollege')?.placeholder || '';
+  const course = document.getElementById('outsideTableCourse')?.value || document.getElementById('outsideTableCourse')?.placeholder || '';
+  const district = document.getElementById('outsideTableDistrict')?.value || document.getElementById('outsideTableDistrict')?.placeholder || '';
+  const travelDate = document.getElementById('outsideTableTravel')?.value || getTodayIso();
+
+  setTxt('pdfOutsideYear', yr);
+  setTxt('pdfOutsideMonth', mo);
+  setTxt('pdfOutsideEmpId', empId);
+  setTxt('pdfOutsideEmpId2', empId);
+  setTxt('pdfOutsideEmpId3', empId);
+  setTxt('pdfOutsideNoteFileNum', noteNum);
+  setTxt('pdfOutsideDt', fmtDate(dtVal));
+  setTxt('pdfOutsideTrainer', trainer);
+  setTxt('pdfOutsideTrainer2', trainer);
+  setTxt('pdfOutsideDesignation', designation);
+  setTxt('pdfOutsideDept', dept);
+  setTxt('pdfOutsideCollege', college);
+  setTxt('pdfOutsideCourse', course);
+  setTxt('pdfOutsideDistrict', district);
+  setTxt('pdfOutsideTravel', fmtDate(travelDate));
+  setTxt('pdfOutsideAmount', indianFormat(grandTotal));
+  setTxt('pdfOutsideAmount2', indianFormat(grandTotal));
+  setTxt('pdfOutsideWords', grandTotal > 0 ? 'Rupees ' + numberToWords(grandTotal) + ' Only' : 'Rupees Zero Only');
+
+  fitOutsidePdfToSinglePage();
+}
+
+/**
+ * Dynamic Outside-City PDF Page 1 Layout Adjuster
+ * Ensures all claim data, travel rows, full declaration, 3x3 approval matrix (with protected signing space),
+ * and Version March 2025 footer fit strictly within a single A4 page.
+ */
+function fitOutsidePdfToSinglePage() {
+  const page1 = document.getElementById('pdfOutsidePage1');
+  if (!page1) return { isValid: false, pageHeight: 0, maxHeight: 1015 };
+
+  const MAX_PAGE_HEIGHT = 1015;
+
+  const travelTable = document.getElementById('pdfOutsideTravelTable');
+  const travelThs = travelTable ? Array.from(travelTable.querySelectorAll('thead th')) : [];
+  const travelTds = travelTable ? Array.from(travelTable.querySelectorAll('tbody td, tfoot td')) : [];
+  const approvalTable = document.getElementById('pdfOutsideApprovalTable');
+  const approvalTds = approvalTable ? Array.from(approvalTable.querySelectorAll('td')) : [];
+  const declBlock = document.getElementById('pdfOutsideDeclarationBlock');
+  const declPs = declBlock ? Array.from(declBlock.querySelectorAll('p')) : [];
+  const headerSection = document.getElementById('pdfOutsideHeaderSection');
+  const headerMetaTds = headerSection ? Array.from(headerSection.querySelectorAll('#pdfOutsideEmpDetailsTable td')) : [];
+  const narrativeBlock = document.getElementById('pdfOutsideNarrativeRefBlock');
+  const narrativePs = narrativeBlock ? Array.from(narrativeBlock.querySelectorAll('p')) : [];
+  const versionFooter = document.getElementById('pdfOutsidePage1Version');
+
+  // Baseline Reset
+  page1.style.width = '190mm';
+  page1.style.padding = '0 3.5mm 0 1.5mm';
+  page1.style.boxSizing = 'border-box';
+
+  const empDetailsTable = document.getElementById('pdfOutsideEmpDetailsTable');
+  if (empDetailsTable) {
+    empDetailsTable.style.width = '100%';
+    empDetailsTable.style.marginLeft = 'auto';
+    empDetailsTable.style.marginRight = 'auto';
+  }
+
+  if (travelTable) {
+    travelTable.style.width = '100%';
+    travelTable.style.marginLeft = 'auto';
+    travelTable.style.marginRight = 'auto';
+    travelTable.style.marginTop = '4px';
+    travelTable.style.marginBottom = '28px';
+    travelTable.style.fontSize = '12.5px';
+  }
+  travelThs.forEach(th => {
+    th.style.padding = th.getAttribute('rowspan') ? '6px 2px' : '4px 2px';
+    th.style.fontSize = th.getAttribute('rowspan') ? '12px' : '11.5px';
+    th.style.lineHeight = '1.2';
+    th.style.verticalAlign = 'middle';
+    th.style.textAlign = 'center';
+    th.style.whiteSpace = 'normal';
+    th.style.overflowWrap = 'anywhere';
+    th.style.background = '#ffffff';
+  });
+  travelTds.forEach(td => {
+    td.style.padding = '3px 2px';
+    td.style.fontSize = '12px';
+    td.style.lineHeight = '1.2';
+    td.style.verticalAlign = 'middle';
+    td.style.whiteSpace = 'normal';
+    td.style.overflowWrap = 'anywhere';
+  });
+
+  if (approvalTable) {
+    approvalTable.style.width = '100%';
+    approvalTable.style.marginLeft = 'auto';
+    approvalTable.style.marginRight = 'auto';
+    approvalTable.style.marginTop = '4px';
+  }
+  approvalTds.forEach(td => {
+    td.style.height = '72px';
+    td.style.padding = '4px 6px';
+    td.style.fontSize = '13px';
+  });
+
+  if (declBlock) {
+    declBlock.style.marginTop = '0px';
+  }
+  declPs.forEach((p, idx) => {
+    p.style.fontSize = '16px';
+    p.style.lineHeight = '1.45';
+    p.style.margin = idx === 2 ? '4px 0 2px 0' : '2px 0';
+  });
+
+  headerMetaTds.forEach((td, idx) => {
+    const col = idx % 4;
+    td.style.padding = (col === 2) ? '2px 0 2px 4px' : '2px 0';
+    td.style.fontSize = '15px';
+    td.style.whiteSpace = 'nowrap';
+  });
+  fitClaimDetailsValues('pdfOutsideEmpDetailsTable');
+
+  if (narrativeBlock) {
+    narrativeBlock.style.marginTop = '2px';
+  }
+  narrativePs.forEach((p, idx) => {
+    p.style.fontSize = '16px';
+    p.style.lineHeight = idx === 3 ? '1.45' : 'normal';
+    p.style.margin = idx === 3 ? '4px 2px 4px 12px' : '1px 0';
+  });
+
+  if (versionFooter) {
+    versionFooter.style.display = 'none';
+  }
+
+  function measureHeight() {
+    return Math.ceil(Math.max(page1.getBoundingClientRect().height, page1.scrollHeight, page1.offsetHeight));
+  }
+
+  let currentH = measureHeight();
+  if (currentH <= MAX_PAGE_HEIGHT) {
+    return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'none' };
+  }
+
+  // Priority 1: Reduce travelTable marginBottom
+  const marginSteps = ['20px', '14px', '8px', '4px'];
+  for (const mb of marginSteps) {
+    if (travelTable) travelTable.style.marginBottom = mb;
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'margin-reduced' };
+    }
+  }
+
+  // Priority 2: Reduce travel data cell padding
+  const padSteps = ['2px 2px', '1.5px 2px', '1px 2px'];
+  for (const pad of padSteps) {
+    travelTds.forEach(td => td.style.padding = pad);
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'padding-reduced' };
+    }
+  }
+
+  // Priority 3: Reduce table font sizes
+  const fontSteps = ['11.5px', '11px', '10.5px', '10px'];
+  for (const fs of fontSteps) {
+    if (travelTable) travelTable.style.fontSize = fs;
+    travelThs.forEach(th => th.style.fontSize = fs);
+    travelTds.forEach(td => td.style.fontSize = fs);
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'table-font-reduced' };
+    }
+  }
+
+  // Priority 4: Reduce header and declaration text sizes
+  const declFontSteps = ['14.5px', '14px', '13.5px'];
+  for (const dfs of declFontSteps) {
+    headerMetaTds.forEach((td, idx) => {
+      const col = idx % 4;
+      td.style.fontSize = dfs;
+      td.style.padding = (col === 2) ? '1px 0 1px 4px' : '1px 0';
+    });
+    narrativePs.forEach((p, idx) => {
+      p.style.fontSize = dfs;
+      p.style.lineHeight = idx === 3 ? '1.3' : 'normal';
+      p.style.margin = idx === 3 ? '2px 2px 2px 8px' : '1px 0';
+    });
+    declPs.forEach(p => {
+      p.style.fontSize = dfs;
+      p.style.lineHeight = '1.3';
+      p.style.margin = '1px 0';
+    });
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'header-decl-compact' };
+    }
+  }
+
+  // Priority 5: Reduce flexible margins
+  if (travelTable) {
+    travelTable.style.marginTop = '2px';
+    travelTable.style.marginBottom = '2px';
+  }
+  if (approvalTable) approvalTable.style.marginTop = '2px';
+  if (narrativeBlock) narrativeBlock.style.marginTop = '0px';
+
+  currentH = measureHeight();
+  if (currentH <= MAX_PAGE_HEIGHT) {
+    return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'flexible-spacing-compact' };
+  }
+
+  // Priority 6: Safe proportional scaling of approval signature boxes (down to min 50px)
+  const approvalHeightSteps = [66, 60, 56, 52, 50];
+  for (const ah of approvalHeightSteps) {
+    approvalTds.forEach(td => td.style.height = ah + 'px');
+    travelThs.forEach(th => { th.style.padding = '3px 1.5px'; th.style.fontSize = '9.5px'; });
+    travelTds.forEach(td => { td.style.padding = '1px 1.5px'; td.style.fontSize = '9.5px'; });
+    currentH = measureHeight();
+    if (currentH <= MAX_PAGE_HEIGHT) {
+      return { isValid: true, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'proportional-scaling-min50' };
+    }
+  }
+
+  return { isValid: false, pageHeight: currentH, maxHeight: MAX_PAGE_HEIGHT, adjustments: 'overflow' };
+}
+
+/* ---------- Outside-City Image Upload ---------- */
+window.uploadedOutsideImages = {
+  1: '',
+  2: ''
+};
+
+function handleOutsideImageSelect(input, index) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Please select a valid image file (PNG, JPG, JPEG, WEBP).');
+    input.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    applyOutsideImageToUIAndPdf(index, e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyOutsideImageToUIAndPdf(index, dataUrl) {
+  window.uploadedOutsideImages[index] = dataUrl;
+  const webImg = document.getElementById('outsideWebImgPreview' + index);
+  const emptyPlaceholder = document.getElementById('outsideEmptyPlaceholder' + index);
+  if (webImg) {
+    webImg.src = dataUrl;
+    webImg.style.display = 'block';
+  }
+  if (emptyPlaceholder) emptyPlaceholder.style.display = 'none';
+
+  const pdfImg = document.getElementById('pdfOutsideImg' + index);
+  if (pdfImg) pdfImg.src = dataUrl;
+}
+
+function clearOutsideImage(index) {
+  window.uploadedOutsideImages[index] = '';
+  const webImg = document.getElementById('outsideWebImgPreview' + index);
+  const emptyPlaceholder = document.getElementById('outsideEmptyPlaceholder' + index);
+  const fileInput = document.getElementById('outsideFileInput' + index);
+
+  if (webImg) {
+    webImg.src = '';
+    webImg.style.display = 'none';
+  }
+  if (emptyPlaceholder) emptyPlaceholder.style.display = 'block';
+  if (fileInput) fileInput.value = '';
+
+  const pdfImg = document.getElementById('pdfOutsideImg' + index);
+  if (pdfImg) pdfImg.src = '';
+}
+
+function initOutsideSampleImages() {
+  const photo = window.SAMPLE_IMG_PHOTO || 'images/sample_training_photo.png';
+  const portal = window.SAMPLE_IMG_SCREENSHOT || 'images/sample_portal_screenshot.png';
+
+  applyOutsideImageToUIAndPdf(1, photo);
+  applyOutsideImageToUIAndPdf(2, portal);
+}
+
+/* ---------- Outside-City Submission ---------- */
+function submitOutside() {
+  const trainerName = (document.getElementById('outsideTableTrainer')?.value || document.getElementById('outsideTableTrainer')?.placeholder || '').trim();
+  const empId = (document.getElementById('outsideTableEmpIdVal')?.value || document.getElementById('outsideTableEmpIdVal')?.placeholder || '').trim();
+  const noteNum = (document.getElementById('outsideTableNoteFileNum')?.value || '1').trim();
+  const total = document.getElementById('outsideAmount')?.value || 0;
+
+  const ref = `TASK/SEAP/2026/Sep/${empId || '6374'} / Note file No: ${noteNum || '1'}`;
+  const modalRef = document.getElementById('modalRef');
+  const modalMsg = document.getElementById('modalMsg');
+  if (modalRef) modalRef.textContent = ref;
+  if (modalMsg) modalMsg.textContent = `Your Outside-City reimbursement claim for Rs. ${indianFormat(total)} has been submitted for approval.`;
+
+  const successModal = document.getElementById('successModal');
+  if (successModal) successModal.removeAttribute('hidden');
+
+  const record = {
+    id: 'OUT-' + Date.now(),
+    ref: ref,
+    amount: total,
+    date: getTodayIso(),
+    trainer: trainerName || 'Ashok Kumar Naik Guguloth',
+    type: 'Outside-City'
+  };
+
+  const list = JSON.parse(localStorage.getItem('reimburse_history_outside_v1') || '[]');
+  list.unshift(record);
+  localStorage.setItem('reimburse_history_outside_v1', JSON.stringify(list.slice(0, 10)));
+  renderOutsideHistory();
+}
+
+function renderOutsideHistory() {
+  const ul = document.getElementById('outsideHistoryList');
+  if (!ul) return;
+  const list = JSON.parse(localStorage.getItem('reimburse_history_outside_v1') || '[]');
+  if (!list.length) {
+    ul.innerHTML = '<li class="history-empty">No outside-city claims submitted yet in this session. Click "Submit for Kind Approval" above to record a claim.</li>';
+    return;
+  }
+  ul.innerHTML = list.map(item => `
+    <li class="history-item">
+      <div>
+        <strong>${item.ref}</strong> &middot; <span>${item.date}</span>
+        <div style="font-size:12px;color:var(--muted);">${item.trainer} &middot; ₹${indianFormat(item.amount)}</div>
+      </div>
+      <span class="pill pill-draft" style="font-size:11px;">Submitted</span>
+    </li>
+  `).join('');
+}
+
+/* ---------- Outside-City PDF Generation (Phase 2 Ready) ---------- */
+async function waitForOutsidePdfImages() {
+  const imgs = [
+    document.getElementById('pdfOutsideImg1'),
+    document.getElementById('pdfOutsideImg2')
+  ].filter(Boolean);
+
+  await Promise.all(imgs.map(img => {
+    if (!img.src || img.style.display === 'none') return Promise.resolve();
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise(resolve => {
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      setTimeout(resolve, 400);
+    });
+  }));
+}
+
+async function generateOutsidePDF(options = {}) {
+  // Wait for web fonts if available
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
+  // 1. Sync outside travel breakdown rows into PDF
+  syncOutsidePdfTravelTable();
+
+  // 2. Wait for supporting images to be ready
+  await waitForOutsidePdfImages();
+
+  // 3. Dynamically fit Page 1 layout
+  const fitResult = fitOutsidePdfToSinglePage();
+
+  const trainerName = (document.getElementById('outsideTableTrainer')?.value || document.getElementById('outsideTableTrainer')?.placeholder || 'Trainer').trim();
+  const empId = (document.getElementById('outsideTableEmpIdVal')?.value || document.getElementById('outsideTableEmpIdVal')?.placeholder || '6374').trim();
+  const cleanFilename = `TASK_SEAP_OutsideCity_Reimbursement_${empId}_${trainerName.replace(/\s+/g, '_')}.pdf`;
+
+  const page1 = document.getElementById('pdfOutsidePage1');
+  const page2 = document.getElementById('pdfOutsidePage2');
+
+  if (!page1) {
+    alert('PDF template not found.');
+    return;
+  }
+
+  const opt = {
+    margin: [8, 10, 8, 10],
+    filename: cleanFilename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: false, scrollX: 0, scrollY: 0 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  try {
+    const domFooter = document.getElementById('pdfOutsidePage1Version');
+    if (domFooter) domFooter.style.display = 'none';
+
+    const w1 = html2pdf().set(opt).from(page1);
+    await w1.toPdf();
+    const pdf = await w1.get('pdf');
+
+    while (pdf.internal.getNumberOfPages() > 1) {
+      pdf.deletePage(pdf.internal.getNumberOfPages());
+    }
+
+    pdf.setPage(1);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(51, 51, 51);
+    pdf.text('Version March 2025', 198.5, 288.5, { align: 'right' });
+
+    if (page2) {
+      const w2 = html2pdf().set(opt).from(page2);
+      await w2.toCanvas();
+      const canvas2 = await w2.get('canvas');
+
+      pdf.addPage();
+      const imgWidth = 190;
+      const imgHeight = (canvas2.height * imgWidth) / canvas2.width;
+      pdf.addImage(canvas2, 'JPEG', 10, 8, imgWidth, Math.min(281, imgHeight));
+
+      while (pdf.internal.getNumberOfPages() > 2) {
+        pdf.deletePage(pdf.internal.getNumberOfPages());
+      }
+    }
+
+    const pageCount = pdf.internal.getNumberOfPages();
+    const resultObj = {
+      success: true,
+      pdf: pdf,
+      pageCount: pageCount,
+      fitResult: fitResult,
+      toPdf: () => ({ get: async (key) => (key === 'pdf' ? pdf : resultObj) })
+    };
+
+    if (!options || options.save !== false) {
+      pdf.save(cleanFilename);
+    }
+    return resultObj;
+  } catch (err) {
+    console.error('Outside PDF error:', err);
+    alert('PDF generation could not complete. Opening print dialog...');
+    window.print();
+  }
+}
+
+/* ---------- Setup Outside-City Listeners & Init ---------- */
+function setupOutsideListeners() {
+  const loadBtn = document.getElementById('loadOutsideSampleBtn');
+  if (loadBtn) loadBtn.addEventListener('click', loadOutsideSample);
+
+  const addBtn = document.getElementById('addOutsideTravelRowBtn');
+  if (addBtn) addBtn.addEventListener('click', () => addOutsideTravelRow());
+
+  const subBtn = document.getElementById('outsideSubmitBtn');
+  if (subBtn) subBtn.addEventListener('click', submitOutside);
+
+  const pdfBtn = document.getElementById('downloadOutsidePdfBtn');
+  if (pdfBtn) pdfBtn.addEventListener('click', generateOutsidePDF);
+
+  // Live input sync
+  const outsideInputIds = [
+    'outsideTableTrainer', 'outsideTableEmpIdVal', 'outsideTableYear', 'outsideTableMonth',
+    'outsideTableNoteFileNum', 'outsideTableDt', 'outsideTableDesignation', 'outsideTableDept',
+    'outsideTableCollege', 'outsideTableCourse', 'outsideTableDistrict', 'outsideTableTravel', 'outsideAmount'
+  ];
+  outsideInputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => {
+        updateOutsideSummary();
+        updateOutsideNarrative();
+        syncOutsidePdfTravelTable();
+      });
+      el.addEventListener('change', () => {
+        updateOutsideSummary();
+        updateOutsideNarrative();
+        syncOutsidePdfTravelTable();
+      });
+    }
+  });
+
+  // Setup outside drag and drop
+  [1, 2].forEach(idx => {
+    const f = document.getElementById('outsideFileInput' + idx);
+    if (f) f.addEventListener('change', () => handleOutsideImageSelect(f, idx));
+    setupDragAndDrop('outsidePreviewArea' + idx, 'outsideFileInput' + idx, inp => handleOutsideImageSelect(inp, idx));
+  });
+}
+
+// Expose Outside-City functions globally
+window.switchReimbursementType = switchReimbursementType;
+window.addOutsideTravelRow = addOutsideTravelRow;
+window.deleteOutsideTravelRow = deleteOutsideTravelRow;
+window.updateOutsideRowTotal = updateOutsideRowTotal;
+window.updateOutsideGrandTotal = updateOutsideGrandTotal;
+window.updateOutsideTravelRowNumbers = updateOutsideTravelRowNumbers;
+window.updateOutsideSummary = updateOutsideSummary;
+window.updateOutsideNarrative = updateOutsideNarrative;
+window.loadOutsideSample = loadOutsideSample;
+window.submitOutside = submitOutside;
+window.renderOutsideHistory = renderOutsideHistory;
+window.syncOutsidePdfTravelTable = syncOutsidePdfTravelTable;
+window.generateOutsidePDF = generateOutsidePDF;
+window.handleOutsideImageSelect = handleOutsideImageSelect;
+window.clearOutsideImage = clearOutsideImage;
+window.fitOutsidePdfToSinglePage = fitOutsidePdfToSinglePage;
+
+setupOutsideListeners();
+[1, 2].forEach(clearOutsideImage);
+for (let row = 0; row < 7; row += 1) {
+  addOutsideTravelRow({ fare: 0, accommodation: 0, food: 0 });
+}
+updateOutsideGrandTotal();
+renderOutsideHistory();
+switchReimbursementType('within-city');
