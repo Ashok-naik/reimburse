@@ -1615,3 +1615,39 @@ input:focus, select:focus, .clean-input:focus, .token-input:focus {
   .card { padding: 14px 11px; }
   .summary-list { grid-template-columns: 1fr; }
 }
+
+/* Keep travel column labels visible while scrolling through long breakdowns. */
+@media screen {
+  #travelBreakdownCard .table-responsive,
+  #outsideTravelBreakdownCard .table-responsive {
+    max-height: min(62vh, 620px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+  #travelBreakdownCard .travel-table thead th,
+  #outsideTravelBreakdownCard .outside-travel-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #edf4f9;
+    box-shadow: 0 1px 0 #d7e1eb;
+  }
+  #travelBreakdownCard .travel-table,
+  #outsideTravelBreakdownCard .outside-travel-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: visible;
+  }
+  #outsideTravelBreakdownCard .outside-travel-table thead tr:nth-child(2) th {
+    top: 31px;
+    z-index: 4;
+  }
+}
+.pdf-preview-overlay:not([hidden]) { display:flex; }
+.pdf-preview-dialog { width:min(1100px, 96vw); height:min(92vh, 1000px); background:#fff; border-radius:16px; padding:14px; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(15,23,42,.3); }
+.pdf-preview-header, .pdf-preview-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 2px 12px; }
+.pdf-preview-header h2 { margin:0; color:var(--navy-dark); font-size:18px; }
+.pdf-preview-dialog iframe { width:100%; flex:1; min-height:0; border:1px solid var(--border); border-radius:8px; background:#e9eef4; }
+.pdf-preview-footer { justify-content:flex-end; padding:12px 2px 2px; }
+@media (max-width:640px) { .pdf-preview-dialog { width:100vw; height:100dvh; max-height:100dvh; border-radius:0; padding:10px; } }

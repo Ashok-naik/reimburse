@@ -973,6 +973,7 @@ async function generatePDF(options = {}) {
     const resultObj = {
       success: true,
       pdf: pdf,
+      filename: cleanFilename,
       pageCount: pageCount,
       fitResult: fitResult,
       toPdf: () => ({
@@ -1145,7 +1146,34 @@ const submitBtn = document.getElementById('submitBtn');
 if (submitBtn) submitBtn.addEventListener('click', submit);
 
 const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', generatePDF);
+if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', async () => showPdfPreview(await generatePDF({ save: false }), 'within-city'));
+
+let previewPdfResult = null;
+let previewPdfType = 'within-city';
+function showPdfPreview(result, type) {
+  if (!result?.pdf) return;
+  previewPdfResult = result;
+  previewPdfType = type;
+  const modal = document.getElementById('pdfPreviewModal');
+  const frame = document.getElementById('pdfPreviewFrame');
+  if (frame) frame.src = result.pdf.output('bloburl');
+  if (modal) modal.removeAttribute('hidden');
+}
+
+const closePdfPreviewBtn = document.getElementById('closePdfPreviewBtn');
+if (closePdfPreviewBtn) closePdfPreviewBtn.addEventListener('click', () => {
+  document.getElementById('pdfPreviewModal')?.setAttribute('hidden', '');
+});
+const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+if (pdfPreviewModal) pdfPreviewModal.addEventListener('click', event => {
+  if (event.target === pdfPreviewModal) pdfPreviewModal.setAttribute('hidden', '');
+});
+const savePreviewPdfBtn = document.getElementById('savePreviewPdfBtn');
+if (savePreviewPdfBtn) savePreviewPdfBtn.addEventListener('click', () => {
+  if (previewPdfResult?.pdf) {
+    previewPdfResult.pdf.save(previewPdfResult.filename || (previewPdfType === 'outside-city' ? 'Outside_City_Reimbursement.pdf' : 'Reimbursement.pdf'));
+  }
+});
 
 const downloadModalPdfBtn = document.getElementById('downloadModalPdfBtn');
 if (downloadModalPdfBtn) {
@@ -2287,6 +2315,7 @@ async function generateOutsidePDF(options = {}) {
     const resultObj = {
       success: true,
       pdf: pdf,
+      filename: cleanFilename,
       pageCount: pageCount,
       fitResult: fitResult,
       toPdf: () => ({ get: async (key) => (key === 'pdf' ? pdf : resultObj) })
@@ -2315,7 +2344,7 @@ function setupOutsideListeners() {
   if (subBtn) subBtn.addEventListener('click', submitOutside);
 
   const pdfBtn = document.getElementById('downloadOutsidePdfBtn');
-  if (pdfBtn) pdfBtn.addEventListener('click', generateOutsidePDF);
+  if (pdfBtn) pdfBtn.addEventListener('click', async () => showPdfPreview(await generateOutsidePDF({ save: false }), 'outside-city'));
 
   // Live input sync
   const outsideInputIds = [
