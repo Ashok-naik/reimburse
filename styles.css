@@ -1651,3 +1651,10 @@ input:focus, select:focus, .clean-input:focus, .token-input:focus {
 .pdf-preview-dialog iframe { width:100%; flex:1; min-height:0; border:1px solid var(--border); border-radius:8px; background:#e9eef4; }
 .pdf-preview-footer { justify-content:flex-end; padding:12px 2px 2px; }
 @media (max-width:640px) { .pdf-preview-dialog { width:100vw; height:100dvh; max-height:100dvh; border-radius:0; padding:10px; } }
+.pdf-preview-pages { display:none; }
+.pdf-preview-page-image { display:block; width:100%; height:auto; margin:0 auto 14px; background:#fff; box-shadow:0 2px 10px rgba(15,23,42,.16); }
+@media (max-width:768px) {
+  #pdfPreviewFrame { display:none; }
+  #pdfPreviewFrame[hidden] { display:none; }
+  .pdf-preview-pages { display:block; flex:1; min-height:0; overflow:auto; padding:10px; border:1px solid var(--border); border-radius:8px; background:#e9eef4; }
+}

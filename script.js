@@ -543,11 +543,12 @@ function fitClaimDetailsValues(tableId) {
     const span = td.querySelector('span');
     if (!span) return;
     span.style.fontSize = '';
-    let size = 15;
-    while (td.scrollWidth > td.clientWidth + 0.5 && size > 10.5) {
-      size -= 0.5;
-      span.style.fontSize = size + 'px';
-    }
+    td.style.whiteSpace = 'normal';
+    td.style.overflowWrap = 'anywhere';
+    td.style.wordBreak = 'normal';
+    span.style.whiteSpace = 'normal';
+    span.style.overflowWrap = 'anywhere';
+    span.style.wordBreak = 'normal';
   });
 }
 
@@ -1156,7 +1157,34 @@ function showPdfPreview(result, type) {
   previewPdfType = type;
   const modal = document.getElementById('pdfPreviewModal');
   const frame = document.getElementById('pdfPreviewFrame');
-  if (frame) frame.src = result.pdf.output('bloburl');
+  const pages = document.getElementById('pdfPreviewPages');
+  const useRenderedPages = window.matchMedia('(max-width: 768px)').matches;
+  if (pages) pages.replaceChildren();
+  if (frame) {
+    frame.hidden = useRenderedPages;
+    if (!useRenderedPages) frame.src = result.pdf.output('bloburl');
+  }
+  if (useRenderedPages && pages && typeof html2canvas !== 'undefined') {
+    const pageIds = type === 'outside-city'
+      ? ['pdfOutsidePage1', 'pdfOutsidePage2']
+      : ['pdfPage1', 'pdfPage2'];
+    Promise.all(pageIds.map(async (id, index) => {
+      const page = document.getElementById(id);
+      if (!page) return;
+      const canvas = await html2canvas(page, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 });
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/jpeg', 0.88);
+      img.alt = `PDF page ${index + 1} preview`;
+      img.className = 'pdf-preview-page-image';
+      pages.appendChild(img);
+    })).catch(error => {
+      console.error('PDF page preview failed:', error);
+      if (frame) {
+        frame.hidden = false;
+        frame.src = result.pdf.output('bloburl');
+      }
+    });
+  }
   if (modal) modal.removeAttribute('hidden');
 }
 

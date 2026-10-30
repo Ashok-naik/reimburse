@@ -860,6 +860,7 @@
         <button type="button" class="btn btn-ghost" id="closePdfPreviewBtn" aria-label="Close PDF preview">Close</button>
       </header>
       <iframe id="pdfPreviewFrame" title="Reimbursement PDF preview"></iframe>
+      <div id="pdfPreviewPages" class="pdf-preview-pages" aria-label="Rendered PDF page previews"></div>
       <footer class="pdf-preview-footer">
         <button type="button" class="btn btn-primary" id="savePreviewPdfBtn">Download PDF</button>
       </footer>
@@ -873,7 +874,10 @@
         <div id="pdfHeaderSection">
           <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
             <tr>
-              <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfYear">2026</span> / <span id="pdfMonth">Sep</span> / <span id="pdfEmpId">6374</span> / Note file No: <span id="pdfNoteFileNum">1</span></strong></td>
+              <td style="width:51.5%;padding:2px 0;font-size:16px;border:none;vertical-align:top;"><strong>TASK/ SEAP / <span id="pdfYear">2026</span> / <span id="pdfMonth">Sep</span> / <span id="pdfEmpId">6374</span> / Note file No: <span id="pdfNoteFileNum">1</span></strong></td>
+              <td style="width:48.5%;padding:2px 0 2px 4px;font-size:16px;border:none;vertical-align:top;">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:16px;"><colgroup><col style="width:44.33%;"><col style="width:3%;"><col style="width:52.67%;"></colgroup><tr><td style="padding:0;border:none;text-align:left;vertical-align:top;"><strong>Dt</strong></td><td style="padding:0;border:none;text-align:left;vertical-align:top;">:</td><td style="padding:0;border:none;text-align:left;vertical-align:top;"><span id="pdfDt">09/09/2026</span></td></tr></table>
+              </td>
             </tr>
           </table>
 
@@ -885,12 +889,6 @@
               <col style="width:27%;">
             </colgroup>
             <tbody>
-              <tr>
-                <td style="padding:2px 0;font-size:15px;border:none;"></td>
-                <td style="padding:2px 0;font-size:15px;border:none;"></td>
-                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Dt</strong></td>
-                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfDt">09/09/2026</span></td>
-              </tr>
               <tr>
                 <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the Trainer</strong></td>
                 <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfTrainer">Ashok Kumar Naik Guguloth</span></td>
@@ -1034,7 +1032,10 @@
         <div id="pdfOutsideHeaderSection">
           <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px;">
             <tr>
-              <td style="width:60%;padding:2px 0;font-size:16px;border:none;"><strong>TASK/ SEAP / <span id="pdfOutsideYear">2026</span> / <span id="pdfOutsideMonth">Sep</span> / <span id="pdfOutsideEmpId">6374</span> / Note file No: <span id="pdfOutsideNoteFileNum">1</span></strong></td>
+              <td style="width:51.5%;padding:2px 0;font-size:16px;border:none;vertical-align:top;"><strong>TASK/ SEAP / <span id="pdfOutsideYear">2026</span> / <span id="pdfOutsideMonth">Sep</span> / <span id="pdfOutsideEmpId">6374</span> / Note file No: <span id="pdfOutsideNoteFileNum">1</span></strong></td>
+              <td style="width:48.5%;padding:2px 0 2px 4px;font-size:16px;border:none;vertical-align:top;">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:16px;"><colgroup><col style="width:44.33%;"><col style="width:3%;"><col style="width:52.67%;"></colgroup><tr><td style="padding:0;border:none;text-align:left;vertical-align:top;"><strong>Dt</strong></td><td style="padding:0;border:none;text-align:left;vertical-align:top;">:</td><td style="padding:0;border:none;text-align:left;vertical-align:top;"><span id="pdfOutsideDt">28/10/2026</span></td></tr></table>
+              </td>
             </tr>
           </table>
 
@@ -1046,12 +1047,6 @@
               <col style="width:27%;">
             </colgroup>
             <tbody>
-              <tr>
-                <td style="padding:2px 0;font-size:15px;border:none;"></td>
-                <td style="padding:2px 0;font-size:15px;border:none;"></td>
-                <td style="padding:2px 0 2px 4px;font-size:15px;border:none;white-space:nowrap;"><strong>Dt</strong></td>
-                <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideDt">28/10/2026</span></td>
-              </tr>
               <tr>
                 <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;"><strong>Name of the Trainer</strong></td>
                 <td style="padding:2px 0;font-size:15px;border:none;white-space:nowrap;">: <span id="pdfOutsideTrainer">Ashok Kumar Naik Guguloth</span></td>
